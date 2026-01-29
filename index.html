@@ -1,50 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>💌</title>
-
-  <!-- Discourage search engines -->
-  <meta name="robots" content="noindex">
-
-  <style>
-    body {
-      background: #ffe6eb;
-      font-family: system-ui, sans-serif;
-      text-align: center;
-      padding-top: 100px;
-    }
-    h1 {
-      color: #d6336c;
-      font-size: 3rem;
-    }
-    p {
-      font-size: 1.3rem;
-    }
-    button {
-      font-size: 1.2rem;
-      padding: 12px 25px;
-      margin: 10px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-    }
-    .yes {
-      background: #ff4d6d;
-      color: white;
-    }
-    .no {
-      background: #adb5bd;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>💌 Will you be my Valentine?</title>
+<style>
+  body {
+    background: #ffe6eb;
+    font-family: system-ui, sans-serif;
+    text-align: center;
+    padding-top: 100px;
+    overflow: hidden;
+  }
+  h1 {
+    color: #d6336c;
+    font-size: 3rem;
+  }
+  p {
+    font-size: 1.3rem;
+  }
+  button {
+    font-size: 1.2rem;
+    padding: 12px 25px;
+    margin: 10px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .yes {
+    background: #ff4d6d;
+    color: white;
+  }
+  .no {
+    background: #adb5bd;
+  }
+</style>
 </head>
 <body>
 
-  <h1>Hey you 👀</h1>
-  <p>Would you wanna be my Valentine? 💖</p>
+<h1>Hey you 👀</h1>
+<p>Will you be my Valentine? 💖</p>
 
-  <button class="yes" onclick="alert('YAY 😭❤️ Text me')">Yes</button>
-  <button class="no" onclick="alert('Okay but I had to ask 😌')">No</button>
+<button class="yes" id="yesBtn" onclick="alert('YAY 😭❤️ Text me')">Yes</button>
+<button class="no" id="noBtn">No</button>
+
+<script>
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+
+  let yesSize = 1; // initial scale
+
+  noBtn.addEventListener('click', () => {
+    yesSize += 0.5; // increase size each click
+    yesBtn.style.transform = `scale(${yesSize})`;
+
+    // optional: make yes button cover screen if big enough
+    const bodyWidth = window.innerWidth;
+    const bodyHeight = window.innerHeight;
+    const yesRect = yesBtn.getBoundingClientRect();
+
+    if(yesRect.width >= bodyWidth || yesRect.height >= bodyHeight) {
+      yesBtn.style.position = 'fixed';
+      yesBtn.style.top = '0';
+      yesBtn.style.left = '0';
+      yesBtn.style.width = '100vw';
+      yesBtn.style.height = '100vh';
+      yesBtn.style.fontSize = '5rem';
+    }
+  });
+</script>
 
 </body>
 </html>
+
