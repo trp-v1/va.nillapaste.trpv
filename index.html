@@ -1,188 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Valentine?</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pinyon+Script&family=Montserrat:wght@300;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-velvet: #4a0416;
+            --border-ink: #7a0d2e;
+            --paper: #fff5f7;
+            --yes-rose: #d81b60;
+        }
 
-    body {
-      margin: 0;
-      height: 100vh;
-      background: radial-gradient(circle at top, #ff4f9a, #8e0038);
-      font-family: 'Poppins', sans-serif;
-      overflow: hidden;
-    }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--deep-velvet);
+            background-image: radial-gradient(circle, #6a0a25 0%, #4a0416 100%);
+            overflow: hidden;
+            font-family: 'Pinyon Script', cursive;
+        }
 
-    .stage {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
+        /* The Decorative Border */
+        #frame {
+            position: fixed;
+            inset: 40px;
+            border: 2px solid var(--border-ink);
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+            pointer-events: none;
+            z-index: 100;
+        }
 
-    h1 {
-      position: absolute;
-      top: 14%;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.4rem, 4.5vw, 3.6rem);
-      letter-spacing: 0.05em;
-      padding: 18px 34px;
-      background: linear-gradient(135deg, #fff1f7, #ffd1e6);
-      color: #4a0020;
-      border: 3px solid #4a0020;
-      border-radius: 10px;
-      box-shadow: 0 14px 35px rgba(0,0,0,0.25);
-      white-space: nowrap;
-      z-index: 3;
-      overflow: visible;
-    }
+        #letter-container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-    h1 span {
-      display: inline-block;
-      position: relative;
-      transition: none;
-    }
+        #title {
+            font-size: 5.5rem;
+            color: var(--paper);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+            margin-bottom: 60px;
+            text-align: center;
+            padding: 0 60px;
+            pointer-events: none;
+        }
 
-    button {
-      position: absolute;
-      padding: 16px 36px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      border: 3px solid black;
-      border-radius: 6px;
-      white-space: nowrap;
-      user-select: none;
-      transition: transform 0.25s ease;
-    }
+        .letter {
+            display: inline-block;
+            white-space: pre;
+        }
 
-    #yes {
-      left: 42%;
-      top: 52%;
-      transform: translate(-50%, -50%) scale(1);
-      background: linear-gradient(135deg, #ff3d8e, #ff7ebc);
-      color: #2b0012;
-      font-weight: 600;
-      z-index: 2;
-    }
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
 
-    #yes::before, #yes::after {
-      content: '❤';
-      position: absolute;
-      color: #ff1f6d;
-      font-size: 1rem;
-      animation: float 2.5s infinite ease-in-out;
-    }
+        button {
+            border: 3px solid black;
+            padding: 20px 60px;
+            cursor: pointer;
+            outline: none;
+            position: relative;
+        }
 
-    #yes::before { left: -18px; top: -10px; }
-    #yes::after { right: -18px; bottom: -10px; animation-delay: 1.2s; }
+        #yes-btn {
+            background-color: var(--yes-rose);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            box-shadow: 10px 10px 0px #000;
+            transform-origin: center;
+        }
 
-    #no {
-      left: 58%;
-      top: 52%;
-      transform: translate(-50%, -50%);
-      background: #b5b5b5;
-      color: #333;
-      z-index: 1;
-    }
+        #no-btn {
+            background-color: #555;
+            color: #999;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            font-size: 1.2rem;
+            box-shadow: 5px 5px 0px #000;
+        }
 
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-      100% { transform: translateY(0); }
-    }
-  </style>
+        .floating-heart {
+            position: absolute;
+            pointer-events: none;
+            color: #ff80ab;
+            font-size: 24px;
+            animation: heartRise 1.5s ease-out forwards;
+        }
+
+        @keyframes heartRise {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), -200px) scale(2); opacity: 0; }
+        }
+
+        #final-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--paper);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            text-align: center;
+            color: var(--deep-velvet);
+            font-size: 8rem;
+            font-family: 'Dancing Script', cursive;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="stage">
-    <h1 id="title"></h1>
-    <button id="yes">YES</button>
-    <button id="no">no</button>
-  </div>
+    <div id="frame"></div>
+    <div id="final-overlay">It was always you. ❤️</div>
 
-  <script>
-    const yes = document.getElementById('yes');
-    const no = document.getElementById('no');
-    const title = document.getElementById('title');
+    <div id="letter-container">
+        <h1 id="title">will you be my valentines?</h1>
+        
+        <div class="controls">
+            <button id="yes-btn">YES ❤️</button>
+            <button id="no-btn">no</button>
+        </div>
+    </div>
 
-    const text = 'will you be my valentines?';
-    const letters = [];
+    <script>
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        const title = document.getElementById('title');
+        const overlay = document.getElementById('final-overlay');
 
-    // build letter spans
-    [...text].forEach(char => {
-      const span = document.createElement('span');
-      span.textContent = char;
-      title.appendChild(span);
-      letters.push(span);
-    });
+        let scale = 1;
+        let scattered = false;
+        const letterData = [];
 
-    let scale = 1;
-    const gap = 14;
-    let scattered = false;
+        // Matter.js for high-quality physics
+        const { Engine, Runner, Bodies, Composite, Body } = Matter;
+        const engine = Engine.create();
+        engine.gravity.y = 0;
 
-    no.addEventListener('click', growYes);
+        const walls = [
+            Bodies.rectangle(window.innerWidth/2, -10, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(window.innerWidth/2, window.innerHeight+10, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(-10, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(window.innerWidth+10, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 })
+        ];
+        Composite.add(engine.world, walls);
+        Runner.run(engine);
 
-    function growYes() {
-      scale *= 1.32;
-      yes.style.transform = `translate(-50%, -50%) scale(${scale})`;
-      pushNoIfNeeded();
-      scatterTitleIfHit();
-
-      if (scale > 12) {
-        yes.style.left = '50%';
-        yes.style.top = '50%';
-        yes.style.transform = 'translate(-50%, -50%) scale(30)';
-      }
-    }
-
-    function pushNoIfNeeded() {
-      const yesRect = yes.getBoundingClientRect();
-      const noRect = no.getBoundingClientRect();
-
-      if (yesRect.right + gap > noRect.left) {
-        const targetLeft = yesRect.right + gap;
-        const delta = targetLeft - noRect.left;
-        no.style.left = `${no.offsetLeft + delta}px`;
-      }
-    }
-
-    function scatterTitleIfHit() {
-      if (scattered) return;
-
-      const yesRect = yes.getBoundingClientRect();
-      const titleRect = title.getBoundingClientRect();
-
-      if (yesRect.top < titleRect.bottom) {
-        scattered = true;
-
-        letters.forEach(letter => {
-          const angle = Math.random() * Math.PI * 2;
-          const speed = Math.random() * 600 + 300;
-          const vx = Math.cos(angle) * speed;
-          const vy = Math.sin(angle) * speed;
-
-          letter.style.position = 'fixed';
-          const rect = letter.getBoundingClientRect();
-          letter.style.left = rect.left + 'px';
-          letter.style.top = rect.top + 'px';
-
-          let start = null;
-          function animate(t) {
-            if (!start) start = t;
-            const dt = (t - start) / 1000;
-            letter.style.left = rect.left + vx * dt + 'px';
-            letter.style.top = rect.top + vy * dt + 'px';
-            requestAnimationFrame(animate);
-          }
-          requestAnimationFrame(animate);
+        // Prep Letters
+        const content = title.innerText;
+        title.innerHTML = '';
+        content.split('').forEach(char => {
+            const span = document.createElement('span');
+            span.className = 'letter';
+            span.innerText = char === ' ' ? '\u00A0' : char;
+            title.appendChild(span);
         });
-      }
-    }
-  </script>
 
+        function scatter() {
+            if (scattered) return;
+            scattered = true;
+            const spans = document.querySelectorAll('.letter');
+            spans.forEach(span => {
+                const rect = span.getBoundingClientRect();
+                const body = Bodies.rectangle(rect.left + rect.width/2, rect.top + rect.height/2, rect.width, rect.height, {
+                    frictionAir: 0, restitution: 1, friction: 0
+                });
+                Body.setVelocity(body, { x: (Math.random()-0.5)*15, y: (Math.random()-0.5)*15 });
+                letterData.push({ body, element: span });
+                Composite.add(engine.world, body);
+            });
+
+            (function update() {
+                letterData.forEach(item => {
+                    item.element.style.position = 'fixed';
+                    item.element.style.left = `${item.body.position.x - item.element.offsetWidth/2}px`;
+                    item.element.style.top = `${item.body.position.y - item.element.offsetHeight/2}px`;
+                    item.element.style.transform = `rotate(${item.body.angle}rad)`;
+                });
+                requestAnimationFrame(update);
+            })();
+        }
+
+        noBtn.addEventListener('click', () => {
+            scale *= 1.45;
+            yesBtn.style.transform = `scale(${scale})`;
+
+            // Burst of hearts
+            for(let i=0; i<6; i++) {
+                const h = document.createElement('div');
+                h.innerHTML = '❤';
+                h.className = 'floating-heart';
+                h.style.setProperty('--tx', (Math.random()-0.5)*200 + 'px');
+                h.style.left = '50%';
+                h.style.top = '50%';
+                yesBtn.appendChild(h);
+                setTimeout(() => h.remove(), 1500);
+            }
+
+            const yesRect = yesBtn.getBoundingClientRect();
+            const titleRect = title.getBoundingClientRect();
+            const noRect = noBtn.getBoundingClientRect();
+
+            if (yesRect.top < titleRect.bottom) scatter();
+            if (yesRect.right > noRect.left - 40) {
+                noBtn.style.transform = `translateX(${yesRect.right - noRect.left + 80}px)`;
+            }
+
+            if (scale > 22) {
+                overlay.style.display = 'flex';
+            }
+        });
+
+        yesBtn.addEventListener('click', () => {
+            overlay.style.display = 'flex';
+        });
+    </script>
 </body>
 </html>
