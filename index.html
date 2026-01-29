@@ -11,8 +11,6 @@
     body {
       margin: 0;
       height: 100vh;
-      display: grid;
-      place-items: center;
       background: radial-gradient(circle at top, #ff4f9a, #8e0038);
       font-family: 'Poppins', sans-serif;
       overflow: hidden;
@@ -22,30 +20,24 @@
       position: relative;
       width: 100%;
       height: 100%;
-      display: grid;
-      place-items: center;
     }
 
     h1 {
       position: absolute;
-      top: 18%;
+      top: 14%;
+      left: 50%;
+      transform: translateX(-50%);
       font-family: 'Playfair Display', serif;
-      font-size: clamp(2.2rem, 4vw, 3.4rem);
-      letter-spacing: 0.04em;
+      font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+      letter-spacing: 0.05em;
+      padding: 18px 34px;
       background: linear-gradient(135deg, #fff1f7, #ffd1e6);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 10px 30px rgba(0,0,0,0.25);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      pointer-events: none;
+      color: #4a0020;
+      border: 3px solid #4a0020;
+      border-radius: 10px;
+      box-shadow: 0 14px 35px rgba(0,0,0,0.25);
       white-space: nowrap;
-    }
-
-    .buttons-layer {
-      position: relative;
-      width: 100%;
-      height: 100%;
+      z-index: 3;
     }
 
     button {
@@ -55,15 +47,15 @@
       cursor: pointer;
       border: 3px solid black;
       border-radius: 6px;
-      transition: transform 0.25s ease;
       white-space: nowrap;
       user-select: none;
+      transition: transform 0.25s ease;
     }
 
     #yes {
       left: 42%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      top: 52%;
+      transform: translate(-50%, -50%) scale(1);
       background: linear-gradient(135deg, #ff3d8e, #ff7ebc);
       color: #2b0012;
       font-weight: 600;
@@ -83,7 +75,7 @@
 
     #no {
       left: 58%;
-      top: 50%;
+      top: 52%;
       transform: translate(-50%, -50%);
       background: #b5b5b5;
       color: #333;
@@ -100,51 +92,42 @@
 <body>
 
   <div class="stage">
-    <h1 id="title">will you be my valentines?</h1>
-    <div class="buttons-layer">
-      <button id="yes">YES</button>
-      <button id="no">no</button>
-    </div>
+    <h1>will you be my valentines?</h1>
+    <button id="yes">YES</button>
+    <button id="no">no</button>
   </div>
 
   <script>
     const yes = document.getElementById('yes');
     const no = document.getElementById('no');
-    const title = document.getElementById('title');
 
     let scale = 1;
+    const gap = 14; // minimum space between buttons
 
-    no.addEventListener('click', () => {
-      growYes();
-    });
+    no.addEventListener('click', growYes);
 
     function growYes() {
-      scale *= 1.35; // exponential growth
+      scale *= 1.32; // exponential growth
       yes.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      pushNoIfNeeded();
 
-      handleCollision();
-
-      if (scale > 3) {
-        title.style.opacity = '0';
-        title.style.transform = 'translateY(-10px)';
-      }
-
-      if (scale > 10) {
+      if (scale > 12) {
         yes.style.left = '50%';
         yes.style.top = '50%';
-        yes.style.transform = 'translate(-50%, -50%) scale(25)';
-        no.style.opacity = '0';
+        yes.style.transform = 'translate(-50%, -50%) scale(30)';
       }
     }
 
-    function handleCollision() {
+    function pushNoIfNeeded() {
       const yesRect = yes.getBoundingClientRect();
       const noRect = no.getBoundingClientRect();
 
-      if (yesRect.right >= noRect.left) {
-        const overlap = yesRect.right - noRect.left + 12;
+      // only push once YES physically reaches NO
+      if (yesRect.right + gap > noRect.left) {
+        const targetLeft = yesRect.right + gap;
+        const delta = targetLeft - noRect.left;
         const currentLeft = no.offsetLeft;
-        no.style.left = `${currentLeft + overlap}px`;
+        no.style.left = `${currentLeft + delta}px`;
       }
     }
   </script>
