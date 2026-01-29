@@ -10,61 +10,89 @@
     font-family: 'Montserrat', sans-serif;
     text-align: center;
     margin: 0;
-    padding-top: 100px;
+    padding: 80px;
     overflow: hidden;
+    position: relative;
   }
 
-  .heart {
-    font-size: 5rem;
-    color: #d6336c;
-    display: inline-block;
-    transition: transform 0.3s ease;
-    position: relative;
-    z-index: 1;
+  /* Page border like love letter */
+  body::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    border: 6px solid #d6336c;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Abstract faint lines from border */
+  body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(214, 51, 108, 0.1) 21px,
+      rgba(214, 51, 108, 0.1) 25px
+    );
+    pointer-events: none;
+    z-index: 0;
   }
 
   h1 {
     font-family: 'Great Vibes', cursive;
     font-size: 4rem;
     color: #a71d4b;
-    margin: -60px 0 1em 0; /* overlap the heart slightly */
-    z-index: 2;
+    margin-bottom: 0.5em;
+    z-index: 1;
     position: relative;
-    transition: transform 0.3s ease;
-  }
-
-  button {
-    font-size: 1.2rem;
-    padding: 12px 25px;
-    margin: 10px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.3s ease, font-size 0.3s ease;
-  }
-
-  .yes {
-    background: #ff4d6d;
-    color: white;
-  }
-
-  .no {
-    background: #adb5bd;
-    position: relative;
+    -webkit-text-stroke: 1px black;
+    text-stroke: 1px black; /* fallback for some browsers */
   }
 
   p {
     font-size: 1.3rem;
     margin-bottom: 2em;
-    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 1;
+    -webkit-text-stroke: 0.8px black;
+    text-stroke: 0.8px black;
+  }
+
+  button {
+    font-size: 1.2rem;
+    padding: 20px 20px; /* bigger but same text size */
+    width: 120px;
+    height: 120px;
+    margin: 10px;
+    border-radius: 0; /* square */
+    border: 3px solid black;
+    cursor: pointer;
+    transition: transform 0.3s ease, font-size 0.3s ease;
+    background: #ff4d6d;
+    color: white;
+    z-index: 1;
+    position: relative;
+  }
+
+  .no {
+    background: #adb5bd;
+    color: black;
   }
 </style>
 </head>
 <body>
 
-<div class="heart">❤️</div>
 <h1>Will you be my Valentine?</h1>
-<p>💖 A little question just for you 💖</p>
+<p>A little question just for you 💖</p>
 
 <button class="yes" id="yesBtn">Yes</button>
 <button class="no" id="noBtn">No</button>
@@ -85,7 +113,6 @@ const yesBtn = document.getElementById('yesBtn');
 const noBtn = document.getElementById('noBtn');
 const header = document.querySelector('h1');
 const paragraph = document.querySelector('p');
-const heart = document.querySelector('.heart');
 
 const clickAudio = document.getElementById('clickAudio');
 const dodgeAudio = document.getElementById('dodgeAudio');
@@ -121,14 +148,12 @@ noBtn.addEventListener('click', () => {
 
     noCount++;
   } else {
-    // grow the yes button and push text and heart
+    // grow the yes button and push text
     scale += scaleIncrement;
     yesBtn.style.transform = `scale(${scale})`;
-    yesBtn.style.fontSize = `${1.2 * scale}rem`;
 
     header.style.transform = `translateY(-${scale * 15}px)`;
     paragraph.style.transform = `translateY(-${scale * 10}px)`;
-    heart.style.transform = `translateY(-${scale * 10}px)`;
     noBtn.style.transform = `translateY(${scale * 20}px)`;
 
     // play growth sound subtly
@@ -152,7 +177,6 @@ noBtn.addEventListener('click', () => {
       yesBtn.style.borderRadius = '0';
       header.style.display = 'none';
       paragraph.style.display = 'none';
-      heart.style.display = 'none';
       noBtn.style.display = 'none';
     }
   }
