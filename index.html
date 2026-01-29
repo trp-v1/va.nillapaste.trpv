@@ -5,14 +5,23 @@
 <title>💌 Valentine</title>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
-    background: linear-gradient(135deg, #ffe6eb, #ffccd5);
+    background-color: #e66784; /* slightly darker & more saturated pink */
     font-family: 'Montserrat', sans-serif;
     text-align: center;
-    margin: 0;
     padding: 80px;
     overflow: hidden;
     position: relative;
+
+    /* border the whole page */
+    border: 20px solid #e66784; /* same as background */
+    box-sizing: border-box;
   }
 
   h1 {
@@ -37,7 +46,7 @@
 
   button {
     font-size: 1.2rem;
-    padding: 15px 40px; /* rectangular shape */
+    padding: 15px 40px; /* rectangular */
     margin: 10px;
     border-radius: 0; /* sharp edges */
     border: 3px solid black;
@@ -118,4 +127,36 @@ noBtn.addEventListener('click', () => {
     scale += scaleIncrement;
     yesBtn.style.transform = `scale(${scale})`;
 
-    header.style.transform = `translateY(-${scale * 15}px*
+    header.style.transform = `translateY(-${scale * 15}px)`;
+    paragraph.style.transform = `translateY(-${scale * 10}px)`;
+    noBtn.style.transform = `translateY(${scale * 20}px)`;
+
+    // play growth sound subtly
+    growAudio.currentTime = 0;
+    growAudio.volume = 0.2;
+    growAudio.play();
+
+    // full screen takeover if big enough
+    const bodyWidth = window.innerWidth;
+    const bodyHeight = window.innerHeight;
+    const yesRect = yesBtn.getBoundingClientRect();
+
+    if(yesRect.width >= bodyWidth * 0.9 || yesRect.height >= bodyHeight * 0.9){
+      yesBtn.style.position = 'fixed';
+      yesBtn.style.top = '0';
+      yesBtn.style.left = '0';
+      yesBtn.style.width = '100vw';
+      yesBtn.style.height = '100vh';
+      yesBtn.style.fontSize = '5rem';
+      yesBtn.style.transform = 'none';
+      yesBtn.style.borderRadius = '0';
+      header.style.display = 'none';
+      paragraph.style.display = 'none';
+      noBtn.style.display = 'none';
+    }
+  }
+});
+</script>
+
+</body>
+</html>
