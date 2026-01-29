@@ -1,162 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>💌 Valentine</title>
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valentine?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
 
-  body {
-    background-color: #e66784; /* slightly darker & more saturated pink */
-    font-family: 'Montserrat', sans-serif;
-    text-align: center;
-    padding: 80px;
-    overflow: hidden;
-    position: relative;
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #ff4f9a, #9b003f);
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+    }
 
-    /* border the whole page */
-    border: 20px solid #e66784; /* same as background */
-    box-sizing: border-box;
-  }
+    .card {
+      position: relative;
+      background: #ff6fb1;
+      border: 6px solid #ff9ccc;
+      padding: 60px 80px;
+      text-align: center;
+      border-radius: 14px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+      transition: transform 0.4s ease;
+    }
 
-  h1 {
-    font-family: 'Great Vibes', cursive;
-    font-size: 4rem;
-    color: #a71d4b;
-    margin-bottom: 0.5em;
-    z-index: 1;
-    position: relative;
-    -webkit-text-stroke: 1px black;
-    text-stroke: 1px black;
-  }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      margin-bottom: 50px;
+      color: #3a0019;
+    }
 
-  p {
-    font-size: 1.3rem;
-    margin-bottom: 2em;
-    position: relative;
-    z-index: 1;
-    -webkit-text-stroke: 0.8px black;
-    text-stroke: 0.8px black;
-  }
+    .buttons {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.4s ease;
+    }
 
-  button {
-    font-size: 1.2rem;
-    padding: 15px 40px; /* rectangular */
-    margin: 10px;
-    border-radius: 0; /* sharp edges */
-    border: 3px solid black;
-    cursor: pointer;
-    transition: transform 0.3s ease, font-size 0.3s ease;
-    background: #ff4d6d;
-    color: white;
-    z-index: 1;
-    position: relative;
-  }
+    button {
+      padding: 16px 36px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border: 3px solid black;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
 
-  .no {
-    background: #adb5bd;
-    color: black;
-  }
-</style>
+    #yes {
+      background: linear-gradient(135deg, #ff3d8e, #ff7ebc);
+      color: #2b0012;
+      font-weight: 600;
+    }
+
+    #yes::before, #yes::after {
+      content: '❤';
+      position: absolute;
+      color: #ff1f6d;
+      font-size: 1rem;
+      opacity: 0.9;
+      animation: float 2.5s infinite ease-in-out;
+    }
+
+    #yes::before {
+      left: -18px;
+      top: -10px;
+    }
+
+    #yes::after {
+      right: -18px;
+      bottom: -10px;
+      animation-delay: 1.2s;
+    }
+
+    #no {
+      background: #b5b5b5;
+      color: #333;
+    }
+
+    .teleport {
+      animation: vanish 0.25s ease, appear 0.25s ease 0.25s;
+    }
+
+    @keyframes vanish {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0; transform: scale(0.5); }
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: scale(0.5); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
-<h1>Will you be my Valentine?</h1>
-<p>A little question just for you 💖</p>
+  <div class="card" id="card">
+    <h1>will you be my valentines?</h1>
+    <div class="buttons" id="buttons">
+      <button id="yes">YES</button>
+      <button id="no">no</button>
+    </div>
+  </div>
 
-<button class="yes" id="yesBtn">Yes</button>
-<button class="no" id="noBtn">No</button>
+  <script>
+    const noBtn = document.getElementById('no');
+    const yesBtn = document.getElementById('yes');
+    const card = document.getElementById('card');
 
-<!-- Audio effects -->
-<audio id="clickAudio">
-  <source src="https://freesound.org/data/previews/256/256113_3263906-lq.mp3" type="audio/mpeg">
-</audio>
-<audio id="dodgeAudio">
-  <source src="https://freesound.org/data/previews/109/109662_945474-lq.mp3" type="audio/mpeg">
-</audio>
-<audio id="growAudio">
-  <source src="https://freesound.org/data/previews/399/399258_5121236-lq.mp3" type="audio/mpeg">
-</audio>
+    let hoverCount = 0;
+    let noLocked = false;
 
-<script>
-const yesBtn = document.getElementById('yesBtn');
-const noBtn = document.getElementById('noBtn');
-const header = document.querySelector('h1');
-const paragraph = document.querySelector('p');
+    noBtn.addEventListener('mouseenter', () => {
+      if (hoverCount < 3) {
+        hoverCount++;
+        teleportNo();
+      }
+    });
 
-const clickAudio = document.getElementById('clickAudio');
-const dodgeAudio = document.getElementById('dodgeAudio');
-const growAudio = document.getElementById('growAudio');
+    noBtn.addEventListener('click', () => {
+      if (hoverCount >= 3) {
+        growYes();
+      }
+    });
 
-let noCount = 0;
-let scale = 1;
-const scaleIncrement = 0.3;
+    function teleportNo() {
+      const maxX = window.innerWidth - noBtn.offsetWidth - 40;
+      const maxY = window.innerHeight - noBtn.offsetHeight - 40;
 
-// Yes button click
-yesBtn.addEventListener('click', () => {
-  clickAudio.currentTime = 0;
-  clickAudio.play();
-  alert('YAY 😭❤️ Text me');
-});
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
 
-// No button behavior
-noBtn.addEventListener('click', () => {
-  if(noCount < 3) {
-    // dodge
-    const maxX = window.innerWidth - noBtn.offsetWidth - 20;
-    const maxY = window.innerHeight - noBtn.offsetHeight - 20;
-    const randomX = Math.floor(Math.random() * maxX);
-    const randomY = Math.floor(Math.random() * maxY);
-    noBtn.style.position = 'absolute';
-    noBtn.style.left = randomX + 'px';
-    noBtn.style.top = randomY + 'px';
-    
-    // play dodge sound subtly
-    dodgeAudio.currentTime = 0;
-    dodgeAudio.volume = 0.2;
-    dodgeAudio.play();
+      noBtn.classList.add('teleport');
 
-    noCount++;
-  } else {
-    // grow the yes button and push text
-    scale += scaleIncrement;
-    yesBtn.style.transform = `scale(${scale})`;
-
-    header.style.transform = `translateY(-${scale * 15}px)`;
-    paragraph.style.transform = `translateY(-${scale * 10}px)`;
-    noBtn.style.transform = `translateY(${scale * 20}px)`;
-
-    // play growth sound subtly
-    growAudio.currentTime = 0;
-    growAudio.volume = 0.2;
-    growAudio.play();
-
-    // full screen takeover if big enough
-    const bodyWidth = window.innerWidth;
-    const bodyHeight = window.innerHeight;
-    const yesRect = yesBtn.getBoundingClientRect();
-
-    if(yesRect.width >= bodyWidth * 0.9 || yesRect.height >= bodyHeight * 0.9){
-      yesBtn.style.position = 'fixed';
-      yesBtn.style.top = '0';
-      yesBtn.style.left = '0';
-      yesBtn.style.width = '100vw';
-      yesBtn.style.height = '100vh';
-      yesBtn.style.fontSize = '5rem';
-      yesBtn.style.transform = 'none';
-      yesBtn.style.borderRadius = '0';
-      header.style.display = 'none';
-      paragraph.style.display = 'none';
-      noBtn.style.display = 'none';
+      setTimeout(() => {
+        noBtn.style.position = 'fixed';
+        noBtn.style.left = `${x}px`;
+        noBtn.style.top = `${y}px`;
+        noBtn.classList.remove('teleport');
+      }, 250);
     }
-  }
-});
-</script>
+
+    function growYes() {
+      const currentScale = yesBtn.dataset.scale ? parseFloat(yesBtn.dataset.scale) : 1;
+      const newScale = currentScale + 0.25;
+      yesBtn.dataset.scale = newScale;
+      yesBtn.style.transform = `scale(${newScale})`;
+
+      card.style.transform = `scale(${1 + newScale * 0.03})`;
+    }
+  </script>
 
 </body>
 </html>
