@@ -2,28 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>💌 Will you be my Valentine?</title>
+<title>💌 Valentine</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <style>
   body {
     background: linear-gradient(135deg, #ffe6eb, #ffccd5);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Montserrat', sans-serif;
     text-align: center;
     margin: 0;
-    padding-top: 80px;
+    padding-top: 100px;
     overflow: hidden;
-    transition: all 0.3s ease;
+  }
+
+  .heart {
+    font-size: 5rem;
+    color: #d6336c;
+    display: inline-block;
+    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 1;
   }
 
   h1 {
-    color: #d6336c;
-    font-size: 3rem;
-    margin-bottom: 0.5em;
-    transition: transform 0.3s ease;
-  }
-
-  p {
-    font-size: 1.3rem;
-    margin-bottom: 2em;
+    font-family: 'Great Vibes', cursive;
+    font-size: 4rem;
+    color: #a71d4b;
+    margin: -60px 0 1em 0; /* overlap the heart slightly */
+    z-index: 2;
+    position: relative;
     transition: transform 0.3s ease;
   }
 
@@ -46,20 +52,32 @@
     background: #adb5bd;
     position: relative;
   }
+
+  p {
+    font-size: 1.3rem;
+    margin-bottom: 2em;
+    transition: transform 0.3s ease;
+  }
 </style>
 </head>
 <body>
 
-<h1>Hey you 👀</h1>
-<p>Will you be my Valentine? 💖</p>
+<div class="heart">❤️</div>
+<h1>Will you be my Valentine?</h1>
+<p>💖 A little question just for you 💖</p>
 
 <button class="yes" id="yesBtn">Yes</button>
 <button class="no" id="noBtn">No</button>
 
-<!-- Optional audio -->
-<audio id="loveAudio" loop>
-  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
+<!-- Audio effects -->
+<audio id="clickAudio">
+  <source src="https://freesound.org/data/previews/256/256113_3263906-lq.mp3" type="audio/mpeg">
+</audio>
+<audio id="dodgeAudio">
+  <source src="https://freesound.org/data/previews/109/109662_945474-lq.mp3" type="audio/mpeg">
+</audio>
+<audio id="growAudio">
+  <source src="https://freesound.org/data/previews/399/399258_5121236-lq.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -67,30 +85,27 @@ const yesBtn = document.getElementById('yesBtn');
 const noBtn = document.getElementById('noBtn');
 const header = document.querySelector('h1');
 const paragraph = document.querySelector('p');
-const audio = document.getElementById('loveAudio');
+const heart = document.querySelector('.heart');
+
+const clickAudio = document.getElementById('clickAudio');
+const dodgeAudio = document.getElementById('dodgeAudio');
+const growAudio = document.getElementById('growAudio');
 
 let noCount = 0;
-let scale = 1; // yes button initial scale
+let scale = 1;
 const scaleIncrement = 0.3;
-
-// play audio on first interaction
-let audioPlayed = false;
-document.body.addEventListener('click', () => {
-  if(!audioPlayed) {
-    audio.play();
-    audioPlayed = true;
-  }
-}, { once: true });
 
 // Yes button click
 yesBtn.addEventListener('click', () => {
+  clickAudio.currentTime = 0;
+  clickAudio.play();
   alert('YAY 😭❤️ Text me');
 });
 
 // No button behavior
 noBtn.addEventListener('click', () => {
   if(noCount < 3) {
-    // dodge the mouse
+    // dodge
     const maxX = window.innerWidth - noBtn.offsetWidth - 20;
     const maxY = window.innerHeight - noBtn.offsetHeight - 20;
     const randomX = Math.floor(Math.random() * maxX);
@@ -98,18 +113,30 @@ noBtn.addEventListener('click', () => {
     noBtn.style.position = 'absolute';
     noBtn.style.left = randomX + 'px';
     noBtn.style.top = randomY + 'px';
+    
+    // play dodge sound subtly
+    dodgeAudio.currentTime = 0;
+    dodgeAudio.volume = 0.2;
+    dodgeAudio.play();
+
     noCount++;
   } else {
-    // grow the yes button and push text away
+    // grow the yes button and push text and heart
     scale += scaleIncrement;
     yesBtn.style.transform = `scale(${scale})`;
     yesBtn.style.fontSize = `${1.2 * scale}rem`;
 
     header.style.transform = `translateY(-${scale * 15}px)`;
     paragraph.style.transform = `translateY(-${scale * 10}px)`;
+    heart.style.transform = `translateY(-${scale * 10}px)`;
     noBtn.style.transform = `translateY(${scale * 20}px)`;
 
-    // if yes button is big enough, fill the screen
+    // play growth sound subtly
+    growAudio.currentTime = 0;
+    growAudio.volume = 0.2;
+    growAudio.play();
+
+    // full screen takeover if big enough
     const bodyWidth = window.innerWidth;
     const bodyHeight = window.innerHeight;
     const yesRect = yesBtn.getBoundingClientRect();
@@ -125,6 +152,7 @@ noBtn.addEventListener('click', () => {
       yesBtn.style.borderRadius = '0';
       header.style.display = 'none';
       paragraph.style.display = 'none';
+      heart.style.display = 'none';
       noBtn.style.display = 'none';
     }
   }
