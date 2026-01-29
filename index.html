@@ -3,230 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For You</title>
+    <title>For My Forever</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pinyon+Script&family=Montserrat:wght@300;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --deep-velvet: #4a0416;
-            --border-ink: #7a0d2e;
-            --paper: #fff5f7;
-            --yes-rose: #d81b60;
+            --velvet: #3d030e;
+            --gold: #d4af37;
+            --rose: #e91e63;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--deep-velvet);
-            background-image: radial-gradient(circle, #6a0a25 0%, #4a0416 100%);
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle, #5e0a1b 0%, #2b0209 100%);
             overflow: hidden;
-            font-family: 'Pinyon Script', cursive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* The Decorative Border */
+        /* The Decorative Frame */
         #frame {
             position: fixed;
-            inset: 40px;
-            border: 2px solid var(--border-ink);
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+            inset: 35px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.3);
             pointer-events: none;
             z-index: 100;
         }
 
-        #letter-container {
-            position: relative;
+        /* Letter Wrapper */
+        #main-stage {
+            text-align: center;
             z-index: 10;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            width: 80%;
         }
 
         #title {
-            font-size: 5.5rem;
-            color: var(--paper);
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+            font-family: 'Great Vibes', cursive;
+            font-size: 6rem;
+            color: #fff1f3;
             margin-bottom: 60px;
-            text-align: center;
-            padding: 0 60px;
-            pointer-events: none;
+            text-shadow: 0 0 15px rgba(255,255,255,0.4);
         }
 
-        .letter {
-            display: inline-block;
-            white-space: pre;
-        }
+        .letter { display: inline-block; white-space: pre; }
 
-        .controls {
+        /* The Buttons */
+        .ui-layer {
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 40px;
-        }
-
-        button {
-            border: 3px solid black;
-            padding: 20px 60px;
-            cursor: pointer;
-            outline: none;
-            position: relative;
+            gap: 50px;
         }
 
         #yes-btn {
-            background-color: var(--yes-rose);
+            background-color: var(--rose);
             color: white;
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
+            padding: 25px 60px;
+            border: 5px solid black; /* Sharp, rectangular as requested */
+            cursor: pointer;
             box-shadow: 10px 10px 0px #000;
-            transform-origin: center;
+            transition: transform 0.1s;
+            position: relative;
         }
 
         #no-btn {
-            background-color: #555;
-            color: #999;
+            background-color: #333;
+            color: #666;
             font-family: 'Montserrat', sans-serif;
-            font-weight: 300;
-            font-size: 1.2rem;
-            box-shadow: 5px 5px 0px #000;
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding: 20px 45px;
+            border: 4px solid black;
+            cursor: pointer;
+            box-shadow: 6px 6px 0px #000;
         }
 
-        .floating-heart {
+        /* Hearts */
+        .particle {
             position: absolute;
             pointer-events: none;
-            color: #ff80ab;
-            font-size: 24px;
-            animation: heartRise 1.5s ease-out forwards;
+            font-size: 20px;
+            animation: fly 1s ease-out forwards;
+        }
+        @keyframes fly {
+            to { transform: translate(var(--x), var(--y)) scale(2); opacity: 0; }
         }
 
-        @keyframes heartRise {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx), -200px) scale(2); opacity: 0; }
-        }
-
-        #final-overlay {
+        #victory-screen {
             position: fixed;
             inset: 0;
-            background: var(--paper);
+            background: #fff;
+            color: var(--velvet);
             display: none;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            text-align: center;
-            color: var(--deep-velvet);
-            font-size: 8rem;
-            font-family: 'Dancing Script', cursive;
+            font-family: 'Cinzel', serif;
+            font-size: 5rem;
         }
     </style>
 </head>
 <body>
 
     <div id="frame"></div>
-    <div id="final-overlay">It was always you. ❤️</div>
+    <div id="victory-screen">
+        <div>ALWAYS. ❤️</div>
+        <div style="font-size: 1.5rem; margin-top: 20px; font-family: 'Montserrat';">Feb 14, 2026</div>
+    </div>
 
-    <div id="letter-container">
+    <div id="main-stage">
         <h1 id="title">will you be my valentines?</h1>
-        
-        <div class="controls">
+        <div class="ui-layer">
             <button id="yes-btn">YES ❤️</button>
             <button id="no-btn">no</button>
         </div>
     </div>
 
     <script>
-        const yesBtn = document.getElementById('yes-btn');
-        const noBtn = document.getElementById('no-btn');
+        const yes = document.getElementById('yes-btn');
+        const no = document.getElementById('no-btn');
         const title = document.getElementById('title');
-        const overlay = document.getElementById('final-overlay');
-
         let scale = 1;
         let scattered = false;
-        const letterData = [];
+        const letterElements = [];
 
-        // Matter.js for high-quality physics
+        // 1. Matter.js Setup
         const { Engine, Runner, Bodies, Composite, Body } = Matter;
         const engine = Engine.create();
-        engine.gravity.y = 0;
+        engine.world.gravity.y = 0;
 
-        const walls = [
-            Bodies.rectangle(window.innerWidth/2, -10, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(window.innerWidth/2, window.innerHeight+10, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(-10, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(window.innerWidth+10, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 })
+        const bounds = [
+            Bodies.rectangle(window.innerWidth/2, 0, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(window.innerWidth/2, window.innerHeight, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(0, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(window.innerWidth, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 })
         ];
-        Composite.add(engine.world, walls);
+        Composite.add(engine.world, bounds);
         Runner.run(engine);
 
-        // Prep Letters
-        const content = title.innerText;
+        // 2. Prep Title
+        const txt = title.innerText;
         title.innerHTML = '';
-        content.split('').forEach(char => {
-            const span = document.createElement('span');
-            span.className = 'letter';
-            span.innerText = char === ' ' ? '\u00A0' : char;
-            title.appendChild(span);
+        txt.split('').forEach(c => {
+            const s = document.createElement('span');
+            s.className = 'letter';
+            s.innerText = c === ' ' ? '\u00A0' : c;
+            title.appendChild(s);
         });
 
-        function scatter() {
+        function doScatter() {
             if (scattered) return;
             scattered = true;
-            const spans = document.querySelectorAll('.letter');
-            spans.forEach(span => {
-                const rect = span.getBoundingClientRect();
-                const body = Bodies.rectangle(rect.left + rect.width/2, rect.top + rect.height/2, rect.width, rect.height, {
-                    frictionAir: 0, restitution: 1, friction: 0
+            document.querySelectorAll('.letter').forEach(s => {
+                const r = s.getBoundingClientRect();
+                const b = Bodies.rectangle(r.left + r.width/2, r.top + r.height/2, r.width, r.height, {
+                    restitution: 1, friction: 0, frictionAir: 0
                 });
-                Body.setVelocity(body, { x: (Math.random()-0.5)*15, y: (Math.random()-0.5)*15 });
-                letterData.push({ body, element: span });
-                Composite.add(engine.world, body);
+                Body.setVelocity(b, { x: (Math.random()-0.5)*20, y: (Math.random()-0.5)*20 });
+                letterElements.push({ body: b, el: s });
+                Composite.add(engine.world, b);
             });
 
-            (function update() {
-                letterData.forEach(item => {
-                    item.element.style.position = 'fixed';
-                    item.element.style.left = `${item.body.position.x - item.element.offsetWidth/2}px`;
-                    item.element.style.top = `${item.body.position.y - item.element.offsetHeight/2}px`;
-                    item.element.style.transform = `rotate(${item.body.angle}rad)`;
+            (function loop() {
+                letterElements.forEach(i => {
+                    i.el.style.position = 'fixed';
+                    i.el.style.left = `${i.body.position.x - i.el.offsetWidth/2}px`;
+                    i.el.style.top = `${i.body.position.y - i.el.offsetHeight/2}px`;
+                    i.el.style.transform = `rotate(${i.body.angle}rad)`;
                 });
-                requestAnimationFrame(update);
+                requestAnimationFrame(loop);
             })();
         }
 
-        noBtn.addEventListener('click', () => {
-            scale *= 1.45;
-            yesBtn.style.transform = `scale(${scale})`;
+        // 3. Logic
+        no.addEventListener('click', () => {
+            scale *= 1.4;
+            yes.style.transform = `scale(${scale})`;
 
-            // Burst of hearts
-            for(let i=0; i<6; i++) {
-                const h = document.createElement('div');
-                h.innerHTML = '❤';
-                h.className = 'floating-heart';
-                h.style.setProperty('--tx', (Math.random()-0.5)*200 + 'px');
-                h.style.left = '50%';
-                h.style.top = '50%';
-                yesBtn.appendChild(h);
-                setTimeout(() => h.remove(), 1500);
+            // Heart Particles
+            for(let i=0; i<8; i++) {
+                const p = document.createElement('div');
+                p.innerText = '❤';
+                p.className = 'particle';
+                p.style.setProperty('--x', (Math.random()-0.5)*400 + 'px');
+                p.style.setProperty('--y', (Math.random()-0.5)*400 + 'px');
+                p.style.left = '50%'; p.style.top = '50%';
+                yes.appendChild(p);
+                setTimeout(() => p.remove(), 1000);
             }
 
-            const yesRect = yesBtn.getBoundingClientRect();
-            const titleRect = title.getBoundingClientRect();
-            const noRect = noBtn.getBoundingClientRect();
+            // Pushing
+            const yr = yes.getBoundingClientRect();
+            const tr = title.getBoundingClientRect();
+            const nr = no.getBoundingClientRect();
 
-            if (yesRect.top < titleRect.bottom) scatter();
-            if (yesRect.right > noRect.left - 40) {
-                noBtn.style.transform = `translateX(${yesRect.right - noRect.left + 80}px)`;
+            if (yr.top < tr.bottom) doScatter();
+            if (yr.right > nr.left - 30) {
+                no.style.transform = `translateX(${yr.right - nr.left + 100}px)`;
             }
 
-            if (scale > 22) {
-                overlay.style.display = 'flex';
+            if (scale > 25) {
+                document.getElementById('victory-screen').style.display = 'flex';
             }
         });
 
-        yesBtn.addEventListener('click', () => {
-            overlay.style.display = 'flex';
+        yes.addEventListener('click', () => {
+            document.getElementById('victory-screen').style.display = 'flex';
         });
+
     </script>
 </body>
 </html>
