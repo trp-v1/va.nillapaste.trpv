@@ -19,22 +19,29 @@
       overflow: hidden;
     }
 
+    /* Screen border */
+    .screen-border {
+      position: fixed;
+      inset: 20px;
+      border: 4px solid #ff9ccc;
+      pointer-events: none;
+      z-index: 1;
+    }
+
     .card {
       position: relative;
-      background: #ff6fb1;
-      border: 6px solid #ff9ccc;
-      padding: 60px 80px;
+      background: transparent;
+      padding: 40px 60px;
       text-align: center;
-      border-radius: 14px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.35);
-      transition: transform 0.4s ease;
+      z-index: 2;
     }
 
     h1 {
       font-family: 'Playfair Display', serif;
       font-size: 3rem;
       margin-bottom: 50px;
-      color: #3a0019;
+      color: #ffe6f1;
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
     .buttons {
@@ -42,7 +49,6 @@
       gap: 30px;
       justify-content: center;
       align-items: center;
-      transition: all 0.4s ease;
     }
 
     button {
@@ -51,7 +57,7 @@
       cursor: pointer;
       border: 3px solid black;
       border-radius: 6px;
-      transition: all 0.3s ease;
+      transition: transform 0.35s ease;
       position: relative;
     }
 
@@ -59,6 +65,7 @@
       background: linear-gradient(135deg, #ff3d8e, #ff7ebc);
       color: #2b0012;
       font-weight: 600;
+      z-index: 3;
     }
 
     #yes::before, #yes::after {
@@ -66,24 +73,16 @@
       position: absolute;
       color: #ff1f6d;
       font-size: 1rem;
-      opacity: 0.9;
       animation: float 2.5s infinite ease-in-out;
     }
 
-    #yes::before {
-      left: -18px;
-      top: -10px;
-    }
-
-    #yes::after {
-      right: -18px;
-      bottom: -10px;
-      animation-delay: 1.2s;
-    }
+    #yes::before { left: -18px; top: -10px; }
+    #yes::after { right: -18px; bottom: -10px; animation-delay: 1.2s; }
 
     #no {
       background: #b5b5b5;
       color: #333;
+      z-index: 2;
     }
 
     .teleport {
@@ -91,12 +90,10 @@
     }
 
     @keyframes vanish {
-      from { opacity: 1; transform: scale(1); }
       to { opacity: 0; transform: scale(0.5); }
     }
 
     @keyframes appear {
-      from { opacity: 0; transform: scale(0.5); }
       to { opacity: 1; transform: scale(1); }
     }
 
@@ -109,9 +106,11 @@
 </head>
 <body>
 
-  <div class="card" id="card">
-    <h1>will you be my valentines?</h1>
-    <div class="buttons" id="buttons">
+  <div class="screen-border"></div>
+
+  <div class="card">
+    <h1 id="title">will you be my valentines?</h1>
+    <div class="buttons">
       <button id="yes">YES</button>
       <button id="no">no</button>
     </div>
@@ -120,10 +119,10 @@
   <script>
     const noBtn = document.getElementById('no');
     const yesBtn = document.getElementById('yes');
-    const card = document.getElementById('card');
+    const title = document.getElementById('title');
 
     let hoverCount = 0;
-    let noLocked = false;
+    let clickCount = 0;
 
     noBtn.addEventListener('mouseenter', () => {
       if (hoverCount < 3) {
@@ -133,6 +132,7 @@
     });
 
     noBtn.addEventListener('click', () => {
+      clickCount++;
       if (hoverCount >= 3) {
         growYes();
       }
@@ -157,11 +157,21 @@
 
     function growYes() {
       const currentScale = yesBtn.dataset.scale ? parseFloat(yesBtn.dataset.scale) : 1;
-      const newScale = currentScale + 0.25;
+      const newScale = currentScale * 1.45;
       yesBtn.dataset.scale = newScale;
       yesBtn.style.transform = `scale(${newScale})`;
 
-      card.style.transform = `scale(${1 + newScale * 0.03})`;
+      if (newScale > 8) {
+        title.style.opacity = '0';
+        noBtn.style.opacity = '0';
+      }
+
+      if (newScale > 18) {
+        yesBtn.style.position = 'fixed';
+        yesBtn.style.left = '50%';
+        yesBtn.style.top = '50%';
+        yesBtn.style.transform = 'translate(-50%, -50%) scale(30)';
+      }
     }
   </script>
 
