@@ -3,124 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For My Forever</title>
+    <title>Be Mine?</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --velvet: #3d030e;
-            --gold: #d4af37;
-            --rose: #e91e63;
+            --bg-vibrant: #ff4d6d; /* Deep vibrant valentine pink */
+            --border-soft: #ff758f; /* Slightly lighter pink border */
+            --yes-pink: #ff0054;
+            --no-gray: #a8a8a8;
         }
 
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            background: radial-gradient(circle, #5e0a1b 0%, #2b0209 100%);
+            background-color: var(--bg-vibrant);
             overflow: hidden;
+            font-family: 'Gaegu', cursive;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* The Decorative Frame */
-        #frame {
+        /* Straight-line simplistic border */
+        #site-frame {
             position: fixed;
-            inset: 35px;
-            border: 3px solid var(--gold);
-            box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.3);
+            inset: 20px;
+            border: 6px solid var(--border-soft);
             pointer-events: none;
-            z-index: 100;
+            z-index: 1000;
         }
 
-        /* Letter Wrapper */
-        #main-stage {
+        #main-ui {
             text-align: center;
             z-index: 10;
-            width: 80%;
+            width: 100%;
         }
 
         #title {
-            font-family: 'Great Vibes', cursive;
-            font-size: 6rem;
-            color: #fff1f3;
-            margin-bottom: 60px;
-            text-shadow: 0 0 15px rgba(255,255,255,0.4);
+            font-size: 5rem;
+            color: white;
+            margin-bottom: 50px;
+            letter-spacing: 2px;
         }
 
         .letter { display: inline-block; white-space: pre; }
 
-        /* The Buttons */
-        .ui-layer {
+        .btn-container {
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 50px;
+            height: 200px; /* Space for growth */
+        }
+
+        button {
+            border: 4px solid black; /* Rectangular, sharp */
+            cursor: pointer;
+            position: absolute;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         #yes-btn {
-            background-color: var(--rose);
+            background-color: var(--yes-pink);
             color: white;
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
-            font-size: 1.6rem;
-            padding: 25px 60px;
-            border: 5px solid black; /* Sharp, rectangular as requested */
-            cursor: pointer;
-            box-shadow: 10px 10px 0px #000;
-            transition: transform 0.1s;
-            position: relative;
+            font-size: 1.8rem;
+            padding: 20px 50px;
+            z-index: 50;
+            left: calc(50% - 140px);
         }
 
         #no-btn {
-            background-color: #333;
-            color: #666;
+            background-color: var(--no-gray);
+            color: #444;
             font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            font-size: 1.1rem;
-            padding: 20px 45px;
-            border: 4px solid black;
-            cursor: pointer;
-            box-shadow: 6px 6px 0px #000;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            z-index: 40;
+            left: calc(50% + 40px);
+            text-transform: lowercase;
         }
 
-        /* Hearts */
-        .particle {
+        .heart {
             position: absolute;
             pointer-events: none;
-            font-size: 20px;
-            animation: fly 1s ease-out forwards;
-        }
-        @keyframes fly {
-            to { transform: translate(var(--x), var(--y)) scale(2); opacity: 0; }
+            font-size: 2rem;
+            animation: pop 0.6s ease-out forwards;
         }
 
-        #victory-screen {
+        @keyframes pop {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(1.5) translateY(-100px) rotate(20deg); opacity: 0; }
+        }
+
+        #win {
             position: fixed;
             inset: 0;
-            background: #fff;
-            color: var(--velvet);
+            background: white;
+            z-index: 5000;
             display: none;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
-            font-family: 'Cinzel', serif;
-            font-size: 5rem;
+            font-size: 6rem;
+            color: var(--yes-pink);
         }
     </style>
 </head>
 <body>
 
-    <div id="frame"></div>
-    <div id="victory-screen">
-        <div>ALWAYS. ❤️</div>
-        <div style="font-size: 1.5rem; margin-top: 20px; font-family: 'Montserrat';">Feb 14, 2026</div>
-    </div>
+    <div id="site-frame"></div>
+    <div id="win">YAY! ❤️</div>
 
-    <div id="main-stage">
+    <div id="main-ui">
         <h1 id="title">will you be my valentines?</h1>
-        <div class="ui-layer">
+        <div class="btn-container">
             <button id="yes-btn">YES ❤️</button>
             <button id="no-btn">no</button>
         </div>
@@ -132,26 +130,26 @@
         const title = document.getElementById('title');
         let scale = 1;
         let scattered = false;
-        const letterElements = [];
+        const letterItems = [];
 
-        // 1. Matter.js Setup
+        // Matter.js Logic
         const { Engine, Runner, Bodies, Composite, Body } = Matter;
         const engine = Engine.create();
         engine.world.gravity.y = 0;
 
-        const bounds = [
-            Bodies.rectangle(window.innerWidth/2, 0, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(window.innerWidth/2, window.innerHeight, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(0, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(window.innerWidth, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 })
+        const walls = [
+            Bodies.rectangle(window.innerWidth/2, 0, window.innerWidth, 2, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(window.innerWidth/2, window.innerHeight, window.innerWidth, 2, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(0, window.innerHeight/2, 2, window.innerHeight, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(window.innerWidth, window.innerHeight/2, 2, window.innerHeight, { isStatic: true, restitution: 1 })
         ];
-        Composite.add(engine.world, bounds);
+        Composite.add(engine.world, walls);
         Runner.run(engine);
 
-        // 2. Prep Title
-        const txt = title.innerText;
+        // Split Letters
+        const content = title.innerText;
         title.innerHTML = '';
-        txt.split('').forEach(c => {
+        content.split('').forEach(c => {
             const s = document.createElement('span');
             s.className = 'letter';
             s.innerText = c === ' ' ? '\u00A0' : c;
@@ -166,58 +164,58 @@
                 const b = Bodies.rectangle(r.left + r.width/2, r.top + r.height/2, r.width, r.height, {
                     restitution: 1, friction: 0, frictionAir: 0
                 });
-                Body.setVelocity(b, { x: (Math.random()-0.5)*20, y: (Math.random()-0.5)*20 });
-                letterElements.push({ body: b, el: s });
+                Body.setVelocity(b, { x: (Math.random()-0.5)*15, y: (Math.random()-0.5)*15 });
+                letterItems.push({ body: b, el: s });
                 Composite.add(engine.world, b);
             });
 
-            (function loop() {
-                letterElements.forEach(i => {
+            (function update() {
+                letterItems.forEach(i => {
                     i.el.style.position = 'fixed';
                     i.el.style.left = `${i.body.position.x - i.el.offsetWidth/2}px`;
                     i.el.style.top = `${i.body.position.y - i.el.offsetHeight/2}px`;
                     i.el.style.transform = `rotate(${i.body.angle}rad)`;
                 });
-                requestAnimationFrame(loop);
+                requestAnimationFrame(update);
             })();
         }
 
-        // 3. Logic
         no.addEventListener('click', () => {
             scale *= 1.4;
             yes.style.transform = `scale(${scale})`;
 
-            // Heart Particles
-            for(let i=0; i<8; i++) {
-                const p = document.createElement('div');
-                p.innerText = '❤';
-                p.className = 'particle';
-                p.style.setProperty('--x', (Math.random()-0.5)*400 + 'px');
-                p.style.setProperty('--y', (Math.random()-0.5)*400 + 'px');
-                p.style.left = '50%'; p.style.top = '50%';
-                yes.appendChild(p);
-                setTimeout(() => p.remove(), 1000);
-            }
+            // Heart effect
+            const h = document.createElement('div');
+            h.innerText = '💖';
+            h.className = 'heart';
+            h.style.left = '50%';
+            yes.appendChild(h);
+            setTimeout(() => h.remove(), 600);
 
-            // Pushing
+            // GROWTH LOGIC: Pushing 'no' and scattering letters
             const yr = yes.getBoundingClientRect();
             const tr = title.getBoundingClientRect();
             const nr = no.getBoundingClientRect();
 
+            // Scatter letters if hit
             if (yr.top < tr.bottom) doScatter();
-            if (yr.right > nr.left - 30) {
-                no.style.transform = `translateX(${yr.right - nr.left + 100}px)`;
+
+            // PUSH NO BUTTON (Ensures no overlap)
+            const overlap = yr.right - nr.left;
+            if (overlap > -20) {
+                const currentNoLeft = no.offsetLeft;
+                no.style.left = (currentNoLeft + overlap + 50) + 'px';
             }
 
-            if (scale > 25) {
-                document.getElementById('victory-screen').style.display = 'flex';
+            if (scale > 20) {
+                document.getElementById('win').style.display = 'flex';
             }
         });
 
         yes.addEventListener('click', () => {
-            document.getElementById('victory-screen').style.display = 'flex';
+            document.getElementById('win').style.display = 'flex';
+            document.getElementById('win').innerText = "I KNEW IT! ❤️";
         });
-
     </script>
 </body>
 </html>
