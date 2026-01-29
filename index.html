@@ -5,19 +5,28 @@
 <title>💌 Will you be my Valentine?</title>
 <style>
   body {
-    background: #ffe6eb;
-    font-family: system-ui, sans-serif;
+    background: linear-gradient(135deg, #ffe6eb, #ffccd5);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: center;
-    padding-top: 100px;
+    margin: 0;
+    padding-top: 80px;
     overflow: hidden;
+    transition: all 0.3s ease;
   }
+
   h1 {
     color: #d6336c;
     font-size: 3rem;
+    margin-bottom: 0.5em;
+    transition: transform 0.3s ease;
   }
+
   p {
     font-size: 1.3rem;
+    margin-bottom: 2em;
+    transition: transform 0.3s ease;
   }
+
   button {
     font-size: 1.2rem;
     padding: 12px 25px;
@@ -25,14 +34,17 @@
     border-radius: 12px;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 0.3s ease, font-size 0.3s ease;
   }
+
   .yes {
     background: #ff4d6d;
     color: white;
   }
+
   .no {
     background: #adb5bd;
+    position: relative;
   }
 </style>
 </head>
@@ -41,35 +53,83 @@
 <h1>Hey you 👀</h1>
 <p>Will you be my Valentine? 💖</p>
 
-<button class="yes" id="yesBtn" onclick="alert('YAY 😭❤️ Text me')">Yes</button>
+<button class="yes" id="yesBtn">Yes</button>
 <button class="no" id="noBtn">No</button>
 
+<!-- Optional audio -->
+<audio id="loveAudio" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
 <script>
-  const yesBtn = document.getElementById('yesBtn');
-  const noBtn = document.getElementById('noBtn');
+const yesBtn = document.getElementById('yesBtn');
+const noBtn = document.getElementById('noBtn');
+const header = document.querySelector('h1');
+const paragraph = document.querySelector('p');
+const audio = document.getElementById('loveAudio');
 
-  let yesSize = 1; // initial scale
+let noCount = 0;
+let scale = 1; // yes button initial scale
+const scaleIncrement = 0.3;
 
-  noBtn.addEventListener('click', () => {
-    yesSize += 0.5; // increase size each click
-    yesBtn.style.transform = `scale(${yesSize})`;
+// play audio on first interaction
+let audioPlayed = false;
+document.body.addEventListener('click', () => {
+  if(!audioPlayed) {
+    audio.play();
+    audioPlayed = true;
+  }
+}, { once: true });
 
-    // optional: make yes button cover screen if big enough
+// Yes button click
+yesBtn.addEventListener('click', () => {
+  alert('YAY 😭❤️ Text me');
+});
+
+// No button behavior
+noBtn.addEventListener('click', () => {
+  if(noCount < 3) {
+    // dodge the mouse
+    const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+    const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+    const randomX = Math.floor(Math.random() * maxX);
+    const randomY = Math.floor(Math.random() * maxY);
+    noBtn.style.position = 'absolute';
+    noBtn.style.left = randomX + 'px';
+    noBtn.style.top = randomY + 'px';
+    noCount++;
+  } else {
+    // grow the yes button and push text away
+    scale += scaleIncrement;
+    yesBtn.style.transform = `scale(${scale})`;
+    yesBtn.style.fontSize = `${1.2 * scale}rem`;
+
+    header.style.transform = `translateY(-${scale * 15}px)`;
+    paragraph.style.transform = `translateY(-${scale * 10}px)`;
+    noBtn.style.transform = `translateY(${scale * 20}px)`;
+
+    // if yes button is big enough, fill the screen
     const bodyWidth = window.innerWidth;
     const bodyHeight = window.innerHeight;
     const yesRect = yesBtn.getBoundingClientRect();
 
-    if(yesRect.width >= bodyWidth || yesRect.height >= bodyHeight) {
+    if(yesRect.width >= bodyWidth * 0.9 || yesRect.height >= bodyHeight * 0.9){
       yesBtn.style.position = 'fixed';
       yesBtn.style.top = '0';
       yesBtn.style.left = '0';
       yesBtn.style.width = '100vw';
       yesBtn.style.height = '100vh';
       yesBtn.style.fontSize = '5rem';
+      yesBtn.style.transform = 'none';
+      yesBtn.style.borderRadius = '0';
+      header.style.display = 'none';
+      paragraph.style.display = 'none';
+      noBtn.style.display = 'none';
     }
-  });
+  }
+});
 </script>
 
 </body>
 </html>
-
