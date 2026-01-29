@@ -38,6 +38,13 @@
       box-shadow: 0 14px 35px rgba(0,0,0,0.25);
       white-space: nowrap;
       z-index: 3;
+      overflow: visible;
+    }
+
+    h1 span {
+      display: inline-block;
+      position: relative;
+      transition: none;
     }
 
     button {
@@ -92,7 +99,7 @@
 <body>
 
   <div class="stage">
-    <h1>will you be my valentines?</h1>
+    <h1 id="title"></h1>
     <button id="yes">YES</button>
     <button id="no">no</button>
   </div>
@@ -100,16 +107,30 @@
   <script>
     const yes = document.getElementById('yes');
     const no = document.getElementById('no');
+    const title = document.getElementById('title');
+
+    const text = 'will you be my valentines?';
+    const letters = [];
+
+    // build letter spans
+    [...text].forEach(char => {
+      const span = document.createElement('span');
+      span.textContent = char;
+      title.appendChild(span);
+      letters.push(span);
+    });
 
     let scale = 1;
-    const gap = 14; // minimum space between buttons
+    const gap = 14;
+    let scattered = false;
 
     no.addEventListener('click', growYes);
 
     function growYes() {
-      scale *= 1.32; // exponential growth
+      scale *= 1.32;
       yes.style.transform = `translate(-50%, -50%) scale(${scale})`;
       pushNoIfNeeded();
+      scatterTitleIfHit();
 
       if (scale > 12) {
         yes.style.left = '50%';
@@ -122,12 +143,43 @@
       const yesRect = yes.getBoundingClientRect();
       const noRect = no.getBoundingClientRect();
 
-      // only push once YES physically reaches NO
       if (yesRect.right + gap > noRect.left) {
         const targetLeft = yesRect.right + gap;
         const delta = targetLeft - noRect.left;
-        const currentLeft = no.offsetLeft;
-        no.style.left = `${currentLeft + delta}px`;
+        no.style.left = `${no.offsetLeft + delta}px`;
+      }
+    }
+
+    function scatterTitleIfHit() {
+      if (scattered) return;
+
+      const yesRect = yes.getBoundingClientRect();
+      const titleRect = title.getBoundingClientRect();
+
+      if (yesRect.top < titleRect.bottom) {
+        scattered = true;
+
+        letters.forEach(letter => {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 600 + 300;
+          const vx = Math.cos(angle) * speed;
+          const vy = Math.sin(angle) * speed;
+
+          letter.style.position = 'fixed';
+          const rect = letter.getBoundingClientRect();
+          letter.style.left = rect.left + 'px';
+          letter.style.top = rect.top + 'px';
+
+          let start = null;
+          function animate(t) {
+            if (!start) start = t;
+            const dt = (t - start) / 1000;
+            letter.style.left = rect.left + vx * dt + 'px';
+            letter.style.top = rect.top + vy * dt + 'px';
+            requestAnimationFrame(animate);
+          }
+          requestAnimationFrame(animate);
+        });
       }
     }
   </script>
