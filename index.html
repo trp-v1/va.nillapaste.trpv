@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valentine?</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <style>
         body, html {
             margin: 0; padding: 0;
@@ -15,13 +14,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Montserrat', sans-serif;
+            /* Reverted to standard clean sans-serif as per first request */
+            font-family: sans-serif; 
         }
 
         #site-border {
             position: fixed;
             inset: 20px;
-            border: 8px solid #ad1457;
+            border: 8px solid #ad1457; /* Original Boarder Color */
             pointer-events: none;
             z-index: 1000;
         }
@@ -36,7 +36,7 @@
             color: white;
             font-size: 4rem;
             margin-bottom: 80px;
-            text-transform: lowercase;
+            font-weight: bold;
         }
 
         .letter { display: inline-block; white-space: pre; }
@@ -46,41 +46,39 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 150px;
+            height: 200px;
         }
 
+        /* RECTANGULAR SCRAPBOOK BUTTONS */
         button {
-            border: 6px solid black;
+            border: 5px solid black;
             cursor: pointer;
             position: absolute;
             outline: none;
-            box-shadow: 10px 10px 0px rgba(0,0,0,1);
-            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 8px 8px 0px rgba(0,0,0,1);
         }
 
         #yes-btn {
-            background-color: #ff007f; /* Vibrant Hot Pink */
+            background-color: #ff4081; /* Appropriate Pink */
             color: white;
-            font-weight: 900;
-            font-size: 1.8rem;
-            padding: 20px 50px;
+            font-weight: bold;
+            font-size: 2rem;
+            padding: 20px 60px;
             z-index: 100;
+            /* Initial placement */
             left: 50%;
-            /* Offset to the left slightly to start */
-            transform: translate(-110%, -50%) scale(1); 
+            transform: translate(-120%, -50%);
         }
 
         #no-btn {
-            background-color: #555555; /* Dull Grey */
-            color: #888888;
-            font-weight: 400;
+            background-color: #757575; /* Dull Gray */
+            color: #333;
             font-size: 1.2rem;
             padding: 15px 40px;
             z-index: 50;
+            /* Initial placement */
             left: 50%;
-            /* Offset to the right slightly to start */
-            transform: translate(10%, -50%) scale(1);
-            text-transform: lowercase;
+            transform: translate(20%, -50%);
         }
 
         .heart-fx {
@@ -91,8 +89,8 @@
         }
 
         @keyframes float {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            100% { transform: translate(-50%, -120px) scale(1.5); opacity: 0; }
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
         }
     </style>
 </head>
@@ -114,25 +112,24 @@
         const title = document.getElementById('title');
         
         let yesScale = 1;
-        let noScale = 1;
         let scattered = false;
         const letterArray = [];
 
-        // Matter.js Setup
+        // Physics Engine
         const { Engine, Runner, Bodies, Composite, Body } = Matter;
         const engine = Engine.create();
         engine.world.gravity.y = 0;
 
         const bounds = [
-            Bodies.rectangle(window.innerWidth/2, -10, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(window.innerWidth/2, window.innerHeight+10, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(-10, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(window.innerWidth+10, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 })
+            Bodies.rectangle(window.innerWidth/2, -50, window.innerWidth, 100, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(window.innerWidth/2, window.innerHeight+50, window.innerWidth, 100, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(-50, window.innerHeight/2, 100, window.innerHeight, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(window.innerWidth+50, window.innerHeight/2, 100, window.innerHeight, { isStatic: true, restitution: 1 })
         ];
         Composite.add(engine.world, bounds);
         Runner.run(engine);
 
-        // Prep Title
+        // Prep Letters
         const txt = title.innerText;
         title.innerHTML = '';
         txt.split('').forEach(char => {
@@ -150,7 +147,7 @@
                 const b = Bodies.rectangle(r.left + r.width/2, r.top + r.height/2, r.width, r.height, {
                     restitution: 1, friction: 0, frictionAir: 0
                 });
-                Body.setVelocity(b, { x: (Math.random()-0.5)*20, y: (Math.random()-0.5)*20 });
+                Body.setVelocity(b, { x: (Math.random()-0.5)*15, y: (Math.random()-0.5)*15 });
                 letterArray.push({ body: b, element: el });
                 Composite.add(engine.world, b);
             });
@@ -167,39 +164,43 @@
         }
 
         no.addEventListener('click', () => {
-            // 1. Grow YES, Shrink NO
-            yesScale *= 1.4;
-            noScale *= 0.85;
-            
-            yes.style.transform = `translate(-110%, -50%) scale(${yesScale})`;
-            no.style.transform = `translate(10%, -50%) scale(${noScale})`;
+            // 1. Grow YES
+            yesScale *= 1.45;
+            yes.style.transform = `translate(-120%, -50%) scale(${yesScale})`;
 
-            // 2. Hearts
-            const h = document.createElement('div');
-            h.innerText = '❤️';
-            h.className = 'heart-fx';
-            h.style.left = '50%'; h.style.top = '50%';
-            yes.appendChild(h);
-            setTimeout(() => h.remove(), 800);
+            // 2. Hearts (Effects)
+            for(let i=0; i<3; i++) {
+                const h = document.createElement('div');
+                h.innerText = '❤️';
+                h.className = 'heart-fx';
+                h.style.left = (Math.random() * 80 + 10) + '%';
+                h.style.top = '0';
+                yes.appendChild(h);
+                setTimeout(() => h.remove(), 800);
+            }
 
-            // 3. Precise Shove Logic
+            // 3. COLLISION RE-FIX (Hard Shove)
             const yr = yes.getBoundingClientRect();
             const nr = no.getBoundingClientRect();
             const tr = title.getBoundingClientRect();
 
-            // Only shove if they actually touch (plus a tiny gap)
-            if (yr.right > nr.left - 10) {
-                const currentNoLeft = no.offsetLeft;
-                const overlap = yr.right - nr.left + 40;
-                no.style.left = (currentNoLeft + overlap) + 'px';
+            // Detect if they overlap at all
+            if (yr.right > nr.left - 20) {
+                // Calculate exactly where the 'no' button should be moved to
+                // Distance to move = (Yes Right Edge + Buffer) - No Left Edge
+                const shiftX = (yr.right - nr.left) + 60;
+                const currentLeft = no.offsetLeft;
+                no.style.left = (currentLeft + shiftX) + 'px';
             }
 
-            // 4. Scatter Title if hit
+            // 4. Scatter Title if growing into it
             if (yr.top < tr.bottom) scatter();
         });
 
         yes.addEventListener('click', () => {
-            alert("will you be my valentines?");
+            // Keeping text functional and same as original request
+            title.innerHTML = "will you be my valentines?";
+            scatter();
         });
     </script>
 </body>
