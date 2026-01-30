@@ -3,130 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Will You?</title>
+    <title>Valentine?</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-saturated: #d81b60; /* Vibrant, dark, saturated pink */
-            --border-pink: #f06292; /* Slightly less dark border */
-            --yes-pink: #ff4081;
-            --no-gray: #757575;
-        }
-
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            background-color: var(--bg-saturated);
+            background-color: #880e4f; /* Your original dark vibrant pink */
             overflow: hidden;
-            font-family: 'Gaegu', cursive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
         }
 
-        /* Straight-line simplistic frame */
-        #frame {
+        /* Straight line boarder */
+        #frame-border {
             position: fixed;
             inset: 20px;
-            border: 8px solid var(--border-pink);
+            border: 8px solid #ad1457; /* Slightly less dark/saturated pink */
             pointer-events: none;
             z-index: 1000;
         }
 
-        #stage {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        #container {
             text-align: center;
+            width: 100%;
+            z-index: 10;
         }
 
-        #title {
-            font-size: 5rem;
+        h1 {
             color: white;
-            margin-bottom: 50px;
-            z-index: 10;
-            pointer-events: none;
+            font-size: 4rem;
+            margin-bottom: 60px;
+            text-transform: lowercase;
         }
 
         .letter { display: inline-block; white-space: pre; }
 
-        /* Scrapbook Style Buttons */
-        .controls {
+        .btn-wrapper {
             position: relative;
-            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100px;
         }
 
+        /* Rectangular Scrapbook Buttons */
         button {
-            border: 6px solid #000; /* Thick black border for scrapbook feel */
+            border: 5px solid black;
             cursor: pointer;
             position: absolute;
-            box-shadow: 8px 8px 0px #000; /* Hard shadow */
-            transition: transform 0.1s;
+            outline: none;
         }
 
         #yes-btn {
-            background-color: var(--yes-pink);
+            background-color: #ff4081;
             color: white;
-            font-family: 'Montserrat', sans-serif;
             font-weight: 900;
-            font-size: 2rem;
-            padding: 20px 60px;
+            font-size: 1.5rem;
+            padding: 20px 50px;
             z-index: 100;
-            left: 30%; /* Starting position */
-            transform: translate(-50%, -50%);
-            top: 50%;
+            left: 50%;
+            transform: translate(-120%, -50%); /* Start on left */
         }
 
         #no-btn {
-            background-color: var(--no-gray);
+            background-color: #757575;
             color: #333;
-            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
             font-size: 1.2rem;
             padding: 15px 40px;
-            z-index: 90;
-            left: 65%; /* Starting position */
-            transform: translate(-50%, -50%);
-            top: 50%;
-            text-transform: lowercase;
+            z-index: 50;
+            left: 50%;
+            transform: translate(20%, -50%); /* Start on right */
         }
 
-        .heart {
+        .heart-fx {
             position: absolute;
-            color: white;
-            font-size: 2rem;
             pointer-events: none;
-            animation: burst 0.7s ease-out forwards;
+            animation: heartPop 0.8s ease-out forwards;
         }
 
-        @keyframes burst {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; }
-        }
-
-        #final {
-            position: fixed;
-            inset: 0;
-            background: white;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            font-size: 8vw;
-            color: var(--bg-saturated);
+        @keyframes heartPop {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div id="frame"></div>
-    <div id="final">FOREVER! ❤️</div>
+    <div id="frame-border"></div>
 
-    <div id="stage">
+    <div id="container">
         <h1 id="title">will you be my valentines?</h1>
-        <div class="controls">
+        <div class="btn-wrapper">
             <button id="yes-btn">YES ❤️</button>
             <button id="no-btn">no</button>
         </div>
@@ -136,11 +108,11 @@
         const yes = document.getElementById('yes-btn');
         const no = document.getElementById('no-btn');
         const title = document.getElementById('title');
-        let currentScale = 1;
+        let scale = 1;
         let scattered = false;
-        const letterBodies = [];
+        const letterData = [];
 
-        // Matter.js Setup
+        // Matter.js Physics
         const { Engine, Runner, Bodies, Composite, Body } = Matter;
         const engine = Engine.create();
         engine.world.gravity.y = 0;
@@ -154,85 +126,73 @@
         Composite.add(engine.world, walls);
         Runner.run(engine);
 
-        // Prep Title Letters
-        const content = title.innerText;
+        // Split text for physics
+        const txt = title.innerText;
         title.innerHTML = '';
-        content.split('').forEach(char => {
+        txt.split('').forEach(c => {
             const span = document.createElement('span');
             span.className = 'letter';
-            span.innerText = char === ' ' ? '\u00A0' : char;
+            span.innerText = c === ' ' ? '\u00A0' : c;
             title.appendChild(span);
         });
 
-        function scatterTitle() {
+        function doScatter() {
             if (scattered) return;
             scattered = true;
             document.querySelectorAll('.letter').forEach(el => {
-                const rect = el.getBoundingClientRect();
-                const b = Bodies.rectangle(rect.left + rect.width/2, rect.top + rect.height/2, rect.width, rect.height, {
-                    restitution: 1, frictionAir: 0, friction: 0
+                const r = el.getBoundingClientRect();
+                const b = Bodies.rectangle(r.left + r.width/2, r.top + r.height/2, r.width, r.height, {
+                    restitution: 1, friction: 0, frictionAir: 0
                 });
                 Body.setVelocity(b, { x: (Math.random()-0.5)*15, y: (Math.random()-0.5)*15 });
-                letterBodies.push({ body: b, element: el });
+                letterData.push({ body: b, el: el });
                 Composite.add(engine.world, b);
             });
 
             (function update() {
-                letterBodies.forEach(item => {
-                    item.element.style.position = 'fixed';
-                    item.element.style.left = `${item.body.position.x - item.element.offsetWidth/2}px`;
-                    item.element.style.top = `${item.body.position.y - item.element.offsetHeight/2}px`;
-                    item.element.style.transform = `rotate(${item.body.angle}rad)`;
+                letterData.forEach(item => {
+                    item.el.style.position = 'fixed';
+                    item.el.style.left = (item.body.position.x - item.el.offsetWidth/2) + 'px';
+                    item.el.style.top = (item.body.position.y - item.el.offsetHeight/2) + 'px';
+                    item.el.style.transform = `rotate(${item.body.angle}rad)`;
                 });
                 requestAnimationFrame(update);
             })();
         }
 
         no.addEventListener('click', () => {
-            currentScale *= 1.45;
-            yes.style.transform = `translate(-50%, -50%) scale(${currentScale})`;
+            scale *= 1.4;
+            yes.style.transform = `translate(-120%, -50%) scale(${scale})`;
 
-            // Create hearts around Yes
-            for(let i=0; i<5; i++) {
-                const h = document.createElement('div');
-                h.innerText = '❤️';
-                h.className = 'heart';
-                h.style.setProperty('--tx', (Math.random()-0.5)*300 + 'px');
-                h.style.setProperty('--ty', (Math.random()-0.5)*300 + 'px');
-                h.style.left = '50%'; h.style.top = '50%';
-                yes.appendChild(h);
-                setTimeout(() => h.remove(), 700);
+            // Add heart FX
+            const h = document.createElement('div');
+            h.innerText = '❤️';
+            h.className = 'heart-fx';
+            h.style.left = '50%'; h.style.top = '0';
+            yes.appendChild(h);
+            setTimeout(() => h.remove(), 800);
+
+            // FORCE PUSH NO BUTTON
+            const yr = yes.getBoundingClientRect();
+            const nr = no.getBoundingClientRect();
+            const tr = title.getBoundingClientRect();
+
+            // If YES right edge touches NO left edge
+            if (yr.right > nr.left - 20) {
+                const moveDist = yr.right - nr.left + 50;
+                const currentLeft = no.offsetLeft;
+                no.style.left = (currentLeft + moveDist) + 'px';
             }
 
-            // --- NO OVERLAP LOGIC ---
-            const yesRect = yes.getBoundingClientRect();
-            const noRect = no.getBoundingClientRect();
-            const titleRect = title.getBoundingClientRect();
-
-            // Push the 'no' button
-            // If the right edge of Yes + padding hits the No button
-            const safetyBuffer = 40;
-            if (yesRect.right + safetyBuffer > noRect.left) {
-                // Set the No button's new left to be the Yes button's right edge + buffer
-                const newLeft = yesRect.right + (noRect.width / 2) + safetyBuffer;
-                no.style.left = newLeft + 'px';
-            }
-
-            // Scatter title if Yes grows into it
-            if (yesRect.top < titleRect.bottom) {
-                scatterTitle();
-            }
-
-            // Victory state
-            if (currentScale > 22) {
-                document.getElementById('final').style.display = 'flex';
-            }
+            // Scatter title
+            if (yr.top < tr.bottom) doScatter();
         });
 
         yes.addEventListener('click', () => {
-            document.getElementById('final').style.display = 'flex';
-            document.getElementById('final').innerText = "SEE YOU ON THE 14th! ❤️";
+            // Keep text the same as requested
+            alert("will you be my valentines? YES!");
         });
+
     </script>
 </body>
 </html>
