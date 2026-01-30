@@ -10,7 +10,7 @@
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            background-color: #880e4f; /* Your original dark vibrant pink */
+            background-color: #880e4f; /* Original Dark Vibrant Pink */
             overflow: hidden;
             display: flex;
             justify-content: center;
@@ -18,87 +18,91 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-        /* Straight line boarder */
-        #frame-border {
+        #site-border {
             position: fixed;
             inset: 20px;
-            border: 8px solid #ad1457; /* Slightly less dark/saturated pink */
+            border: 8px solid #ad1457;
             pointer-events: none;
             z-index: 1000;
         }
 
-        #container {
+        #ui-layer {
             text-align: center;
-            width: 100%;
             z-index: 10;
+            width: 100%;
         }
 
         h1 {
             color: white;
             font-size: 4rem;
-            margin-bottom: 60px;
+            margin-bottom: 80px;
             text-transform: lowercase;
         }
 
         .letter { display: inline-block; white-space: pre; }
 
-        .btn-wrapper {
+        .btn-stage {
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100px;
+            height: 150px;
         }
 
-        /* Rectangular Scrapbook Buttons */
         button {
-            border: 5px solid black;
+            border: 6px solid black;
             cursor: pointer;
             position: absolute;
             outline: none;
+            box-shadow: 10px 10px 0px rgba(0,0,0,1);
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         #yes-btn {
-            background-color: #ff4081;
+            background-color: #ff007f; /* Vibrant Hot Pink */
             color: white;
             font-weight: 900;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             padding: 20px 50px;
             z-index: 100;
             left: 50%;
-            transform: translate(-120%, -50%); /* Start on left */
+            /* Offset to the left slightly to start */
+            transform: translate(-110%, -50%) scale(1); 
         }
 
         #no-btn {
-            background-color: #757575;
-            color: #333;
+            background-color: #555555; /* Dull Grey */
+            color: #888888;
             font-weight: 400;
             font-size: 1.2rem;
             padding: 15px 40px;
             z-index: 50;
             left: 50%;
-            transform: translate(20%, -50%); /* Start on right */
+            /* Offset to the right slightly to start */
+            transform: translate(10%, -50%) scale(1);
+            text-transform: lowercase;
         }
 
         .heart-fx {
             position: absolute;
+            font-size: 2rem;
             pointer-events: none;
-            animation: heartPop 0.8s ease-out forwards;
+            animation: float 0.8s ease-out forwards;
         }
 
-        @keyframes heartPop {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -120px) scale(1.5); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div id="frame-border"></div>
+    <div id="site-border"></div>
 
-    <div id="container">
+    <div id="ui-layer">
         <h1 id="title">will you be my valentines?</h1>
-        <div class="btn-wrapper">
+        <div class="btn-stage">
             <button id="yes-btn">YES ❤️</button>
             <button id="no-btn">no</button>
         </div>
@@ -108,35 +112,37 @@
         const yes = document.getElementById('yes-btn');
         const no = document.getElementById('no-btn');
         const title = document.getElementById('title');
-        let scale = 1;
+        
+        let yesScale = 1;
+        let noScale = 1;
         let scattered = false;
-        const letterData = [];
+        const letterArray = [];
 
-        // Matter.js Physics
+        // Matter.js Setup
         const { Engine, Runner, Bodies, Composite, Body } = Matter;
         const engine = Engine.create();
         engine.world.gravity.y = 0;
 
-        const walls = [
-            Bodies.rectangle(window.innerWidth/2, 0, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(window.innerWidth/2, window.innerHeight, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(0, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(window.innerWidth, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 })
+        const bounds = [
+            Bodies.rectangle(window.innerWidth/2, -10, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(window.innerWidth/2, window.innerHeight+10, window.innerWidth, 20, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(-10, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 }),
+            Bodies.rectangle(window.innerWidth+10, window.innerHeight/2, 20, window.innerHeight, { isStatic: true, restitution: 1 })
         ];
-        Composite.add(engine.world, walls);
+        Composite.add(engine.world, bounds);
         Runner.run(engine);
 
-        // Split text for physics
+        // Prep Title
         const txt = title.innerText;
         title.innerHTML = '';
-        txt.split('').forEach(c => {
+        txt.split('').forEach(char => {
             const span = document.createElement('span');
             span.className = 'letter';
-            span.innerText = c === ' ' ? '\u00A0' : c;
+            span.innerText = char === ' ' ? '\u00A0' : char;
             title.appendChild(span);
         });
 
-        function doScatter() {
+        function scatter() {
             if (scattered) return;
             scattered = true;
             document.querySelectorAll('.letter').forEach(el => {
@@ -144,55 +150,57 @@
                 const b = Bodies.rectangle(r.left + r.width/2, r.top + r.height/2, r.width, r.height, {
                     restitution: 1, friction: 0, frictionAir: 0
                 });
-                Body.setVelocity(b, { x: (Math.random()-0.5)*15, y: (Math.random()-0.5)*15 });
-                letterData.push({ body: b, el: el });
+                Body.setVelocity(b, { x: (Math.random()-0.5)*20, y: (Math.random()-0.5)*20 });
+                letterArray.push({ body: b, element: el });
                 Composite.add(engine.world, b);
             });
 
-            (function update() {
-                letterData.forEach(item => {
-                    item.el.style.position = 'fixed';
-                    item.el.style.left = (item.body.position.x - item.el.offsetWidth/2) + 'px';
-                    item.el.style.top = (item.body.position.y - item.el.offsetHeight/2) + 'px';
-                    item.el.style.transform = `rotate(${item.body.angle}rad)`;
+            (function loop() {
+                letterArray.forEach(item => {
+                    item.element.style.position = 'fixed';
+                    item.element.style.left = `${item.body.position.x - item.element.offsetWidth/2}px`;
+                    item.element.style.top = `${item.body.position.y - item.element.offsetHeight/2}px`;
+                    item.element.style.transform = `rotate(${item.body.angle}rad)`;
                 });
-                requestAnimationFrame(update);
+                requestAnimationFrame(loop);
             })();
         }
 
         no.addEventListener('click', () => {
-            scale *= 1.4;
-            yes.style.transform = `translate(-120%, -50%) scale(${scale})`;
+            // 1. Grow YES, Shrink NO
+            yesScale *= 1.4;
+            noScale *= 0.85;
+            
+            yes.style.transform = `translate(-110%, -50%) scale(${yesScale})`;
+            no.style.transform = `translate(10%, -50%) scale(${noScale})`;
 
-            // Add heart FX
+            // 2. Hearts
             const h = document.createElement('div');
             h.innerText = '❤️';
             h.className = 'heart-fx';
-            h.style.left = '50%'; h.style.top = '0';
+            h.style.left = '50%'; h.style.top = '50%';
             yes.appendChild(h);
             setTimeout(() => h.remove(), 800);
 
-            // FORCE PUSH NO BUTTON
+            // 3. Precise Shove Logic
             const yr = yes.getBoundingClientRect();
             const nr = no.getBoundingClientRect();
             const tr = title.getBoundingClientRect();
 
-            // If YES right edge touches NO left edge
-            if (yr.right > nr.left - 20) {
-                const moveDist = yr.right - nr.left + 50;
-                const currentLeft = no.offsetLeft;
-                no.style.left = (currentLeft + moveDist) + 'px';
+            // Only shove if they actually touch (plus a tiny gap)
+            if (yr.right > nr.left - 10) {
+                const currentNoLeft = no.offsetLeft;
+                const overlap = yr.right - nr.left + 40;
+                no.style.left = (currentNoLeft + overlap) + 'px';
             }
 
-            // Scatter title
-            if (yr.top < tr.bottom) doScatter();
+            // 4. Scatter Title if hit
+            if (yr.top < tr.bottom) scatter();
         });
 
         yes.addEventListener('click', () => {
-            // Keep text the same as requested
-            alert("will you be my valentines? YES!");
+            alert("will you be my valentines?");
         });
-
     </script>
 </body>
 </html>
