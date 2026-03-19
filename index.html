@@ -1,207 +1,990 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine?</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <style>
-        body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            background-color: #880e4f; /* Original Dark Vibrant Pink */
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* Reverted to standard clean sans-serif as per first request */
-            font-family: sans-serif; 
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArcadeZone — Free Mini Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-        #site-border {
-            position: fixed;
-            inset: 20px;
-            border: 8px solid #ad1457; /* Original Boarder Color */
-            pointer-events: none;
-            z-index: 1000;
-        }
+<!-- Google AdSense — replace ca-pub-XXXXXXXXXXXXXXXX with your publisher ID -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 
-        #ui-layer {
-            text-align: center;
-            z-index: 10;
-            width: 100%;
-        }
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131e;
+    --surface2: #1c1c2e;
+    --border: #2a2a40;
+    --accent: #f0c040;
+    --accent2: #e05080;
+    --accent3: #40d0c0;
+    --text: #f0eff8;
+    --muted: #7878a0;
+    --radius: 14px;
+  }
 
-        h1 {
-            color: white;
-            font-size: 4rem;
-            margin-bottom: 80px;
-            font-weight: bold;
-        }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .letter { display: inline-block; white-space: pre; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-        .btn-stage {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
-        }
+  /* ── BACKGROUND GRID ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(240,192,64,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(240,192,64,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-        /* RECTANGULAR SCRAPBOOK BUTTONS */
-        button {
-            border: 5px solid black;
-            cursor: pointer;
-            position: absolute;
-            outline: none;
-            box-shadow: 8px 8px 0px rgba(0,0,0,1);
-        }
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 6vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
 
-        #yes-btn {
-            background-color: #ff4081; /* Appropriate Pink */
-            color: white;
-            font-weight: bold;
-            font-size: 2rem;
-            padding: 20px 60px;
-            z-index: 100;
-            /* Initial placement */
-            left: 50%;
-            transform: translate(-120%, -50%);
-        }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-        #no-btn {
-            background-color: #757575; /* Dull Gray */
-            color: #333;
-            font-size: 1.2rem;
-            padding: 15px 40px;
-            z-index: 50;
-            /* Initial placement */
-            left: 50%;
-            transform: translate(20%, -50%);
-        }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 500;
+    margin-left: 24px;
+    transition: color .2s;
+  }
+  nav a:hover { color: var(--accent); }
 
-        .heart-fx {
-            position: absolute;
-            font-size: 2rem;
-            pointer-events: none;
-            animation: float 0.8s ease-out forwards;
-        }
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 80px 6vw 60px;
+  }
 
-        @keyframes float {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
-        }
-    </style>
+  .hero-badge {
+    display: inline-block;
+    background: rgba(240,192,64,.12);
+    border: 1px solid rgba(240,192,64,.3);
+    color: var(--accent);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    line-height: .95;
+    letter-spacing: 3px;
+    background: linear-gradient(160deg, #fff 30%, var(--muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 1.1rem;
+    margin-top: 16px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── AD BANNER ── */
+  .ad-banner {
+    position: relative;
+    z-index: 1;
+    max-width: 728px;
+    margin: 0 auto 40px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-align: center;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ad-label {
+    position: absolute;
+    top: 4px; left: 8px;
+    font-size: .6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+
+  /* ── GAME GRID ── */
+  .section {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 6vw 80px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 2px;
+    color: var(--text);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── GAME CARD ── */
+  .game-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+    position: relative;
+  }
+  .game-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 16px 48px rgba(240,192,64,.15);
+  }
+
+  .game-thumb {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-thumb .shine {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.06) 0%, transparent 60%);
+  }
+
+  .game-info { padding: 16px 18px 20px; }
+  .game-tag {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 100px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .tag-arcade { background: rgba(240,192,64,.15); color: var(--accent); }
+  .tag-puzzle { background: rgba(64,208,192,.15); color: var(--accent3); }
+  .tag-action { background: rgba(224,80,128,.15); color: var(--accent2); }
+
+  .game-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .game-desc {
+    font-size: .85rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  .play-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent);
+    color: #000;
+    font-weight: 700;
+    font-size: .85rem;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background .15s, transform .15s;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .play-btn:hover { background: #ffe070; transform: scale(1.04); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(6px);
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 860px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+  }
+  .modal-close {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s;
+  }
+  .modal-close:hover { background: var(--border); }
+
+  /* AdSense inside modal */
+  .modal-ad {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    min-height: 60px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+  }
+
+  .game-container { padding: 24px; }
+
+  /* ── GAMES ── */
+  canvas { display: block; border-radius: 10px; }
+
+  /* Snake */
+  #snakeCanvas { background: #0d1117; }
+
+  /* Memory */
+  .memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 80px);
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .mem-card {
+    width: 80px; height: 80px;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 2rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s, border-color .15s;
+    user-select: none;
+    perspective: 400px;
+  }
+  .mem-card.flipped { border-color: var(--accent); background: #1e1e30; }
+  .mem-card.matched { border-color: var(--accent3); opacity: .6; cursor: default; }
+  .mem-card:hover:not(.matched) { transform: scale(1.06); }
+
+  /* Reaction */
+  #reactionBox {
+    width: 100%; height: 200px;
+    border-radius: 14px;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border: 2px solid var(--border);
+    transition: background .15s;
+    user-select: none;
+  }
+
+  /* Number Guesser */
+  .guess-input {
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 1.2rem;
+    padding: 10px 16px;
+    width: 140px;
+    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .guess-input:focus { border-color: var(--accent); }
+
+  /* Word Scramble */
+  .scramble-word {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    letter-spacing: 8px;
+    color: var(--accent);
+    text-align: center;
+    margin: 16px 0;
+  }
+
+  /* Shared game UI */
+  .game-ui { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .score-bar {
+    display: flex; gap: 20px; font-size: .9rem; color: var(--muted);
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 100px; padding: 6px 20px;
+  }
+  .score-bar span { color: var(--accent); font-weight: 700; }
+
+  .game-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .85rem;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .game-btn:hover { border-color: var(--accent); background: rgba(240,192,64,.06); }
+  .game-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); }
+  .game-btn.primary:hover { background: #ffe070; }
+
+  .result-msg {
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    min-height: 24px;
+  }
+  .result-msg.good { color: var(--accent3); }
+  .result-msg.bad { color: var(--accent2); }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center;
+    padding: 40px 6vw;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: .8rem;
+  }
+  footer .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+
+  /* ── SIDE AD ── */
+  .side-ad {
+    position: fixed;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 160px;
+    min-height: 600px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 50;
+    overflow: hidden;
+  }
+  .side-ad .ad-label { position: absolute; top: 6px; left: 8px; }
+  @media (max-width: 1300px) { .side-ad { display: none; } }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .game-card { animation: fadeUp .4s ease both; }
+  .game-card:nth-child(1) { animation-delay: .05s; }
+  .game-card:nth-child(2) { animation-delay: .10s; }
+  .game-card:nth-child(3) { animation-delay: .15s; }
+  .game-card:nth-child(4) { animation-delay: .20s; }
+  .game-card:nth-child(5) { animation-delay: .25s; }
+  .game-card:nth-child(6) { animation-delay: .30s; }
+</style>
 </head>
 <body>
 
-    <div id="site-border"></div>
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">ArcadeZone</div>
+  <nav>
+    <a href="#">Games</a>
+    <a href="#">Leaderboard</a>
+    <a href="#">About</a>
+  </nav>
+</header>
 
-    <div id="ui-layer">
-        <h1 id="title">will you be my valentines?</h1>
-        <div class="btn-stage">
-            <button id="yes-btn">YES ❤️</button>
-            <button id="no-btn">no</button>
-        </div>
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-badge">🕹️ Free Browser Games</div>
+  <h1>Play.<br><span>Win.</span><br>Repeat.</h1>
+  <p>No download. No login. Just instant fun — classic mini games right in your browser.</p>
+</section>
+
+<!-- ── TOP LEADERBOARD AD ── -->
+<div class="section">
+  <div class="ad-banner">
+    <span class="ad-label">Advertisement</span>
+    <!-- Replace with your AdSense leaderboard unit -->
+    <ins class="adsbygoogle"
+         style="display:inline-block;width:728px;height:90px"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="1234567890"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+</div>
+
+<!-- ── GAME GRID ── -->
+<div class="section">
+  <h2 class="section-title">All Games</h2>
+  <div class="game-grid" id="gameGrid">
+
+    <div class="game-card" onclick="openGame('snake')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#0d1117,#1a2a1a)">🐍<div class="shine"></div></div>
+      <div class="game-info">
+        <span class="game-tag tag-arcade">Arcade</span>
+        <div class="game-name">Snake</div>
+        <p class="game-desc">Classic snake — eat to grow, don't hit the walls or yourself!</p>
+        <button class="play-btn">▶ Play Now</button>
+      </div>
     </div>
 
-    <script>
-        const yes = document.getElementById('yes-btn');
-        const no = document.getElementById('no-btn');
-        const title = document.getElementById('title');
-        
-        let yesScale = 1;
-        let scattered = false;
-        const letterArray = [];
+    <div class="game-card" onclick="openGame('memory')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#0d1520,#102030)">🧠<div class="shine"></div></div>
+      <div class="game-info">
+        <span class="game-tag tag-puzzle">Puzzle</span>
+        <div class="game-name">Memory Match</div>
+        <p class="game-desc">Flip cards and find all matching emoji pairs before time runs out.</p>
+        <button class="play-btn">▶ Play Now</button>
+      </div>
+    </div>
 
-        // Physics Engine
-        const { Engine, Runner, Bodies, Composite, Body } = Matter;
-        const engine = Engine.create();
-        engine.world.gravity.y = 0;
+    <div class="game-card" onclick="openGame('reaction')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#20100d,#301510)">⚡<div class="shine"></div></div>
+      <div class="game-info">
+        <span class="game-tag tag-action">Action</span>
+        <div class="game-name">Reaction Time</div>
+        <p class="game-desc">How fast are you? Click the moment the screen turns green.</p>
+        <button class="play-btn">▶ Play Now</button>
+      </div>
+    </div>
 
-        const bounds = [
-            Bodies.rectangle(window.innerWidth/2, -50, window.innerWidth, 100, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(window.innerWidth/2, window.innerHeight+50, window.innerWidth, 100, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(-50, window.innerHeight/2, 100, window.innerHeight, { isStatic: true, restitution: 1 }),
-            Bodies.rectangle(window.innerWidth+50, window.innerHeight/2, 100, window.innerHeight, { isStatic: true, restitution: 1 })
-        ];
-        Composite.add(engine.world, bounds);
-        Runner.run(engine);
+    <div class="game-card" onclick="openGame('guesser')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#1a1020,#241530)">🔢<div class="shine"></div></div>
+      <div class="game-info">
+        <span class="game-tag tag-puzzle">Puzzle</span>
+        <div class="game-name">Number Guesser</div>
+        <p class="game-desc">Guess the secret number in as few attempts as possible.</p>
+        <button class="play-btn">▶ Play Now</button>
+      </div>
+    </div>
 
-        // Prep Letters
-        const txt = title.innerText;
-        title.innerHTML = '';
-        txt.split('').forEach(char => {
-            const span = document.createElement('span');
-            span.className = 'letter';
-            span.innerText = char === ' ' ? '\u00A0' : char;
-            title.appendChild(span);
-        });
+    <div class="game-card" onclick="openGame('scramble')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#0d1820,#0a2020)">🔤<div class="shine"></div></div>
+      <div class="game-info">
+        <span class="game-tag tag-puzzle">Puzzle</span>
+        <div class="game-name">Word Scramble</div>
+        <p class="game-desc">Unscramble the jumbled word before the timer runs out!</p>
+        <button class="play-btn">▶ Play Now</button>
+      </div>
+    </div>
 
-        function scatter() {
-            if (scattered) return;
-            scattered = true;
-            document.querySelectorAll('.letter').forEach(el => {
-                const r = el.getBoundingClientRect();
-                const b = Bodies.rectangle(r.left + r.width/2, r.top + r.height/2, r.width, r.height, {
-                    restitution: 1, friction: 0, frictionAir: 0
-                });
-                Body.setVelocity(b, { x: (Math.random()-0.5)*15, y: (Math.random()-0.5)*15 });
-                letterArray.push({ body: b, element: el });
-                Composite.add(engine.world, b);
-            });
+    <div class="game-card" onclick="openGame('clicker')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#201000,#2a1800)">🎯<div class="shine"></div></div>
+      <div class="game-info">
+        <span class="game-tag tag-action">Action</span>
+        <div class="game-name">Target Clicker</div>
+        <p class="game-desc">Click as many targets as possible before they disappear!</p>
+        <button class="play-btn">▶ Play Now</button>
+      </div>
+    </div>
 
-            (function loop() {
-                letterArray.forEach(item => {
-                    item.element.style.position = 'fixed';
-                    item.element.style.left = `${item.body.position.x - item.element.offsetWidth/2}px`;
-                    item.element.style.top = `${item.body.position.y - item.element.offsetHeight/2}px`;
-                    item.element.style.transform = `rotate(${item.body.angle}rad)`;
-                });
-                requestAnimationFrame(loop);
-            })();
-        }
+  </div>
+</div>
 
-        no.addEventListener('click', () => {
-            // 1. Grow YES
-            yesScale *= 1.45;
-            yes.style.transform = `translate(-120%, -50%) scale(${yesScale})`;
+<!-- ── IN-CONTENT AD ── -->
+<div class="section">
+  <div class="ad-banner">
+    <span class="ad-label">Advertisement</span>
+    <ins class="adsbygoogle"
+         style="display:inline-block;width:728px;height:90px"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="0987654321"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+</div>
 
-            // 2. Hearts (Effects)
-            for(let i=0; i<3; i++) {
-                const h = document.createElement('div');
-                h.innerText = '❤️';
-                h.className = 'heart-fx';
-                h.style.left = (Math.random() * 80 + 10) + '%';
-                h.style.top = '0';
-                yes.appendChild(h);
-                setTimeout(() => h.remove(), 800);
-            }
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">ArcadeZone</div>
+  <p>© 2025 ArcadeZone · Free browser mini games · All rights reserved</p>
+  <p style="margin-top:6px"><a href="#" style="color:var(--muted);text-decoration:none;">Privacy Policy</a> · <a href="#" style="color:var(--muted);text-decoration:none;">Contact</a></p>
+</footer>
 
-            // 3. COLLISION RE-FIX (Hard Shove)
-            const yr = yes.getBoundingClientRect();
-            const nr = no.getBoundingClientRect();
-            const tr = title.getBoundingClientRect();
+<!-- ── SIDE AD ── -->
+<div class="side-ad">
+  <span class="ad-label">Ad</span>
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:160px;height:600px"
+       data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+       data-ad-slot="1122334455"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 
-            // Detect if they overlap at all
-            if (yr.right > nr.left - 20) {
-                // Calculate exactly where the 'no' button should be moved to
-                // Distance to move = (Yes Right Edge + Buffer) - No Left Edge
-                const shiftX = (yr.right - nr.left) + 60;
-                const currentLeft = no.offsetLeft;
-                no.style.left = (currentLeft + shiftX) + 'px';
-            }
+<!-- ── GAME MODAL ── -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Game</div>
+      <button class="modal-close" onclick="closeGame()">✕</button>
+    </div>
+    <!-- In-modal ad (shows between games) -->
+    <div class="modal-ad">
+      <span class="ad-label">Advertisement</span>
+      <ins class="adsbygoogle"
+           style="display:inline-block;width:468px;height:60px"
+           data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+           data-ad-slot="5544332211"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+    <div class="game-container" id="gameContainer"></div>
+  </div>
+</div>
 
-            // 4. Scatter Title if growing into it
-            if (yr.top < tr.bottom) scatter();
-        });
 
-        yes.addEventListener('click', () => {
-            // Keeping text functional and same as original request
-            title.innerHTML = "will you be my valentines?";
-            scatter();
-        });
-    </script>
+<script>
+// ══════════════════════════════════════════
+//  GAME LAUNCHER
+// ══════════════════════════════════════════
+const games = { snake, memory, reaction, guesser, scramble, clicker };
+
+function openGame(id) {
+  const modal = document.getElementById('modal');
+  const container = document.getElementById('gameContainer');
+  const title = document.getElementById('modalTitle');
+  modal.classList.add('open');
+  container.innerHTML = '';
+  games[id](container, title);
+}
+
+function closeGame() {
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('gameContainer').innerHTML = '';
+  // stop any running loops
+  if (window._gameLoop) clearInterval(window._gameLoop);
+  if (window._reactionTimeout) clearTimeout(window._reactionTimeout);
+  if (window._scrambleInterval) clearInterval(window._scrambleInterval);
+  if (window._clickerInterval) clearInterval(window._clickerInterval);
+}
+
+// close on overlay click
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeGame();
+});
+
+
+// ══════════════════════════════════════════
+//  1. SNAKE
+// ══════════════════════════════════════════
+function snake(container, title) {
+  title.textContent = '🐍 Snake';
+  const W = 400, H = 400, SZ = 20;
+  container.innerHTML = `
+    <div class="game-ui">
+      <div class="score-bar">Score <span id="snakeScore">0</span> &nbsp;|&nbsp; High <span id="snakeHi">0</span></div>
+      <canvas id="snakeCanvas" width="${W}" height="${H}"></canvas>
+      <p style="color:var(--muted);font-size:.8rem">Arrow keys or WASD to move</p>
+    </div>`;
+
+  const canvas = document.getElementById('snakeCanvas');
+  const ctx = canvas.getContext('2d');
+  let snake = [{x:10,y:10}], dir = {x:1,y:0}, food = rndFood(), score = 0, hi = 0, alive = true;
+
+  function rndFood() {
+    return {x: Math.floor(Math.random()*(W/SZ)), y: Math.floor(Math.random()*(H/SZ))};
+  }
+
+  document.onkeydown = e => {
+    if (!alive) return restart();
+    if (['ArrowUp','w'].includes(e.key) && dir.y===0) { dir={x:0,y:-1}; e.preventDefault(); }
+    if (['ArrowDown','s'].includes(e.key) && dir.y===0) { dir={x:0,y:1}; e.preventDefault(); }
+    if (['ArrowLeft','a'].includes(e.key) && dir.x===0) { dir={x:-1,y:0}; e.preventDefault(); }
+    if (['ArrowRight','d'].includes(e.key) && dir.x===0) { dir={x:1,y:0}; e.preventDefault(); }
+  };
+
+  function restart() {
+    snake=[{x:10,y:10}]; dir={x:1,y:0}; food=rndFood(); score=0; alive=true;
+  }
+
+  function draw() {
+    ctx.fillStyle = '#0d1117'; ctx.fillRect(0,0,W,H);
+    // grid
+    ctx.strokeStyle='rgba(255,255,255,.03)';
+    for(let i=0;i<W;i+=SZ){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke();}
+    for(let i=0;i<H;i+=SZ){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(W,i);ctx.stroke();}
+    // food
+    ctx.fillStyle='#e05080';
+    ctx.beginPath();
+    ctx.arc(food.x*SZ+SZ/2, food.y*SZ+SZ/2, SZ/2-2, 0, Math.PI*2);
+    ctx.fill();
+    // snake
+    snake.forEach((seg,i) => {
+      const t = i/snake.length;
+      ctx.fillStyle = `hsl(${45+t*30}, 90%, ${60-t*20}%)`;
+      ctx.beginPath();
+      ctx.roundRect(seg.x*SZ+1, seg.y*SZ+1, SZ-2, SZ-2, 4);
+      ctx.fill();
+    });
+    if (!alive) {
+      ctx.fillStyle='rgba(0,0,0,.7)';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#f0c040';ctx.font='bold 28px DM Sans';ctx.textAlign='center';
+      ctx.fillText('Game Over!', W/2, H/2-16);
+      ctx.fillStyle='#7878a0';ctx.font='16px DM Sans';
+      ctx.fillText('Press any key to restart', W/2, H/2+16);
+    }
+  }
+
+  if (window._gameLoop) clearInterval(window._gameLoop);
+  window._gameLoop = setInterval(() => {
+    if (!alive) { draw(); return; }
+    const head = {x: snake[0].x+dir.x, y: snake[0].y+dir.y};
+    if (head.x<0||head.x>=W/SZ||head.y<0||head.y>=H/SZ) { alive=false; return; }
+    if (snake.some(s=>s.x===head.x&&s.y===head.y)) { alive=false; return; }
+    snake.unshift(head);
+    if (head.x===food.x && head.y===food.y) {
+      score++; food=rndFood();
+      if(score>hi)hi=score;
+      document.getElementById('snakeScore').textContent=score;
+      document.getElementById('snakeHi').textContent=hi;
+    } else { snake.pop(); }
+    draw();
+  }, 120);
+}
+
+// ══════════════════════════════════════════
+//  2. MEMORY MATCH
+// ══════════════════════════════════════════
+function memory(container, title) {
+  title.textContent = '🧠 Memory Match';
+  const emojis = ['🦊','🐸','🦄','🍕','🎸','🚀','🌈','🎃'];
+  let deck = [...emojis,...emojis].sort(()=>Math.random()-.5);
+  let flipped=[], matched=0, moves=0, locked=false;
+
+  container.innerHTML = `
+    <div class="game-ui">
+      <div class="score-bar">Moves <span id="memMoves">0</span> &nbsp;|&nbsp; Matched <span id="memMatched">0</span>/8</div>
+      <div class="memory-grid" id="memGrid"></div>
+      <button class="game-btn" onclick="memory(document.getElementById('gameContainer'),document.getElementById('modalTitle'))">New Game</button>
+      <div class="result-msg good" id="memMsg"></div>
+    </div>`;
+
+  const grid = document.getElementById('memGrid');
+  deck.forEach((emoji,i) => {
+    const card = document.createElement('div');
+    card.className='mem-card';
+    card.dataset.idx=i;
+    card.dataset.val=emoji;
+    card.textContent='';
+    card.addEventListener('click',() => {
+      if(locked||card.classList.contains('flipped')||card.classList.contains('matched'))return;
+      card.textContent=emoji; card.classList.add('flipped'); flipped.push(card);
+      if(flipped.length===2) {
+        locked=true; moves++;
+        document.getElementById('memMoves').textContent=moves;
+        setTimeout(()=>{
+          if(flipped[0].dataset.val===flipped[1].dataset.val){
+            flipped.forEach(c=>c.classList.add('matched')); matched++;
+            document.getElementById('memMatched').textContent=matched;
+            if(matched===8) document.getElementById('memMsg').textContent=`🎉 You won in ${moves} moves!`;
+          } else {
+            flipped.forEach(c=>{c.textContent='';c.classList.remove('flipped');});
+          }
+          flipped=[]; locked=false;
+        },600);
+      }
+    });
+    grid.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════
+//  3. REACTION TIME
+// ══════════════════════════════════════════
+function reaction(container, title) {
+  title.textContent = '⚡ Reaction Time';
+  container.innerHTML = `
+    <div class="game-ui">
+      <div class="score-bar">Best <span id="bestTime">—</span>ms</div>
+      <div id="reactionBox">Click to Start</div>
+      <div class="result-msg" id="reactMsg"></div>
+      <p style="color:var(--muted);font-size:.8rem">Wait for green, then click as fast as you can!</p>
+    </div>`;
+
+  let state='idle', startTime, best=Infinity;
+  const box = document.getElementById('reactionBox');
+
+  box.addEventListener('click',() => {
+    if(state==='idle') {
+      state='waiting';
+      box.style.background='#2a1a1a';
+      box.textContent='Wait for it…';
+      box.style.color='var(--accent2)';
+      const delay = 1500 + Math.random()*3000;
+      window._reactionTimeout = setTimeout(()=>{
+        if(state!=='waiting')return;
+        state='go'; startTime=Date.now();
+        box.style.background='#0a2a0a';
+        box.textContent='CLICK NOW!';
+        box.style.color='#40e080';
+      }, delay);
+    } else if(state==='waiting') {
+      state='idle';
+      if(window._reactionTimeout)clearTimeout(window._reactionTimeout);
+      box.style.background='var(--surface2)'; box.textContent='Too early! Click to try again'; box.style.color='var(--accent2)';
+      document.getElementById('reactMsg').textContent='';
+      document.getElementById('reactMsg').className='result-msg bad';
+    } else if(state==='go') {
+      const ms = Date.now()-startTime;
+      if(ms<best){best=ms; document.getElementById('bestTime').textContent=best;}
+      state='idle';
+      box.style.background='var(--surface2)'; box.textContent='Click to Play Again'; box.style.color='var(--text)';
+      const msg=document.getElementById('reactMsg');
+      msg.textContent = `${ms}ms — ${ms<200?'🔥 Incredible!':ms<300?'⚡ Great!':ms<500?'👍 Good!':'😅 Keep practicing!'}`;
+      msg.className='result-msg '+(ms<300?'good':'bad');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+//  4. NUMBER GUESSER
+// ══════════════════════════════════════════
+function guesser(container, title) {
+  title.textContent = '🔢 Number Guesser';
+  let secret = Math.floor(Math.random()*100)+1, attempts=0;
+
+  container.innerHTML = `
+    <div class="game-ui">
+      <p style="color:var(--muted)">I'm thinking of a number between <strong style="color:var(--text)">1</strong> and <strong style="color:var(--text)">100</strong></p>
+      <div class="score-bar">Attempts <span id="attempts">0</span></div>
+      <div style="display:flex;gap:10px">
+        <input class="guess-input" id="guessInput" type="number" min="1" max="100" placeholder="1–100">
+        <button class="play-btn" onclick="submitGuess()">Guess</button>
+      </div>
+      <div class="result-msg" id="guessMsg"></div>
+      <button class="game-btn" onclick="guesser(document.getElementById('gameContainer'),document.getElementById('modalTitle'))">New Game</button>
+    </div>`;
+
+  document.getElementById('guessInput').addEventListener('keydown', e => { if(e.key==='Enter') submitGuess(); });
+
+  window.submitGuess = function() {
+    const val = parseInt(document.getElementById('guessInput').value);
+    const msg = document.getElementById('guessMsg');
+    if(isNaN(val)||val<1||val>100){msg.textContent='Enter a number between 1 and 100';msg.className='result-msg bad';return;}
+    attempts++;
+    document.getElementById('attempts').textContent=attempts;
+    if(val===secret){
+      msg.textContent=`🎉 Correct! It was ${secret}! You got it in ${attempts} attempts.`;
+      msg.className='result-msg good';
+    } else if(val<secret){
+      msg.textContent='📈 Too low! Go higher.';msg.className='result-msg bad';
+    } else {
+      msg.textContent='📉 Too high! Go lower.';msg.className='result-msg bad';
+    }
+    document.getElementById('guessInput').value='';
+    document.getElementById('guessInput').focus();
+  };
+}
+
+// ══════════════════════════════════════════
+//  5. WORD SCRAMBLE
+// ══════════════════════════════════════════
+function scramble(container, title) {
+  title.textContent = '🔤 Word Scramble';
+  const words = ['PLANET','GIRAFFE','KITCHEN','LIBRARY','TORNADO','OCTOPUS','BLANKET','DIAMOND','JOURNEY','FANTASY','PENGUIN','CACTUS'];
+  let word, scrambled, timer, timeLeft=30;
+
+  function newRound() {
+    word = words[Math.floor(Math.random()*words.length)];
+    let arr = word.split('');
+    do { arr.sort(()=>Math.random()-.5); } while(arr.join('')===word);
+    scrambled = arr.join('');
+    document.getElementById('scrambledWord').textContent = scrambled;
+    document.getElementById('scrambleInput').value='';
+    document.getElementById('scrambleMsg').textContent='';
+    document.getElementById('scrambleMsg').className='result-msg';
+    timeLeft=30; document.getElementById('scrambleTimer').textContent=timeLeft;
+    clearInterval(window._scrambleInterval);
+    window._scrambleInterval=setInterval(()=>{
+      timeLeft--;
+      document.getElementById('scrambleTimer').textContent=timeLeft;
+      if(timeLeft<=0){
+        clearInterval(window._scrambleInterval);
+        const msg=document.getElementById('scrambleMsg');
+        msg.textContent=`⏰ Time's up! It was "${word}"`;
+        msg.className='result-msg bad';
+      }
+    },1000);
+  }
+
+  container.innerHTML=`
+    <div class="game-ui">
+      <div class="score-bar">Time <span id="scrambleTimer">30</span>s &nbsp;|&nbsp; Score <span id="scrambleScore">0</span></div>
+      <p style="color:var(--muted)">Unscramble this word:</p>
+      <div class="scramble-word" id="scrambledWord"></div>
+      <div style="display:flex;gap:10px">
+        <input class="guess-input" id="scrambleInput" placeholder="Your answer" style="width:180px;text-transform:uppercase">
+        <button class="play-btn" onclick="checkScramble()">Submit</button>
+      </div>
+      <div class="result-msg" id="scrambleMsg"></div>
+      <button class="game-btn" onclick="newRound()">Skip Word</button>
+    </div>`;
+
+  let score=0;
+  window.checkScramble = function() {
+    const val=document.getElementById('scrambleInput').value.trim().toUpperCase();
+    const msg=document.getElementById('scrambleMsg');
+    if(val===word){
+      score++; document.getElementById('scrambleScore').textContent=score;
+      msg.textContent=`✅ Correct! +1`;msg.className='result-msg good';
+      clearInterval(window._scrambleInterval);
+      setTimeout(newRound,900);
+    } else {
+      msg.textContent='❌ Not quite, try again!';msg.className='result-msg bad';
+    }
+  };
+  document.getElementById('scrambleInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')window.checkScramble();});
+
+  newRound();
+}
+
+// ══════════════════════════════════════════
+//  6. TARGET CLICKER
+// ══════════════════════════════════════════
+function clicker(container, title) {
+  title.textContent = '🎯 Target Clicker';
+  container.innerHTML=`
+    <div class="game-ui">
+      <div class="score-bar">Score <span id="clickScore">0</span> &nbsp;|&nbsp; Time <span id="clickTime">30</span>s &nbsp;|&nbsp; Best <span id="clickBest">0</span></div>
+      <div id="clickArea" style="position:relative;width:500px;height:280px;background:var(--surface2);border-radius:14px;overflow:hidden;border:2px solid var(--border);cursor:crosshair;"></div>
+      <button class="game-btn primary" id="clickStart" onclick="startClicker()">Start Game</button>
+    </div>`;
+
+  let score=0,best=0,timeLeft=30,running=false;
+
+  function spawnTarget(area){
+    const existing=area.querySelector('.target');
+    if(existing)existing.remove();
+    const size=Math.floor(Math.random()*24)+24;
+    const t=document.createElement('div');
+    const colors=['#f0c040','#e05080','#40d0c0','#a040f0','#40a0f0'];
+    t.className='target';
+    t.style.cssText=`position:absolute;width:${size}px;height:${size}px;border-radius:50%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*(500-size)}px;top:${Math.random()*(280-size)}px;
+      cursor:crosshair;transition:transform .1s;box-shadow:0 0 12px rgba(255,255,255,.2)`;
+    t.addEventListener('click',()=>{if(!running)return;score++;document.getElementById('clickScore').textContent=score;spawnTarget(area);});
+    area.appendChild(t);
+    setTimeout(()=>{if(t.parentNode){t.remove();if(running)spawnTarget(area);}},1200);
+  }
+
+  window.startClicker=function(){
+    score=0;timeLeft=30;running=true;
+    document.getElementById('clickScore').textContent=0;
+    document.getElementById('clickStart').style.display='none';
+    const area=document.getElementById('clickArea');
+    spawnTarget(area);
+    clearInterval(window._clickerInterval);
+    window._clickerInterval=setInterval(()=>{
+      timeLeft--;
+      document.getElementById('clickTime').textContent=timeLeft;
+      if(timeLeft<=0){
+        running=false;clearInterval(window._clickerInterval);
+        area.innerHTML='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px"><div style="font-family:Bebas Neue,sans-serif;font-size:2rem;color:var(--accent)">GAME OVER</div><div style="color:var(--muted)">Score: '+score+'</div></div>';
+        if(score>best){best=score;document.getElementById('clickBest').textContent=best;}
+        const btn=document.getElementById('clickStart');
+        btn.style.display='';btn.textContent='Play Again';
+      }
+    },1000);
+  };
+}
+</script>
 </body>
 </html>
